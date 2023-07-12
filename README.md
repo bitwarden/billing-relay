@@ -1,3 +1,7 @@
-# Template Repository
+<p align="center">
+  <img src="https://github.com/bitwarden/brand/blob/master/screenshots/mothership.jpg" alt="Mothership" />
+</p>
 
-This repository serves as a template for others and establishes very basic structure and tooling setup for later customization.
+---
+
+Globally-available corporate services.
