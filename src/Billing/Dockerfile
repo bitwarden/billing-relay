@@ -16,6 +16,7 @@ RUN chmod +x /entrypoint.sh
 
 COPY obj/build-output/publish .
 
-HEALTHCHECK CMD curl -f http://localhost:5000/alive || exit 1
+# Needs healthcheck /alive endpoint in the app
+# HEALTHCHECK CMD curl -f http://localhost:5000/alive || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]
