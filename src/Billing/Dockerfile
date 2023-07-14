@@ -10,9 +10,10 @@ RUN apt-get update \
 ENV ASPNETCORE_URLS http://+:5000
 WORKDIR /app
 EXPOSE 5000
+
 COPY prepare-env.sh /
-RUN chmod +x /prepare-env.sh
-RUN /prepare-env.sh
+RUN chmod +x /prepare-env.sh && \
+    /prepare-env.sh
 
 HEALTHCHECK CMD curl -f http://localhost:5000/alive || exit 1
 
