@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <BaseVersion>0.0.1</BaseVersion>
+    <ImplicitUsings>true</ImplicitUsings>
+  </PropertyGroup>
+</Project>
