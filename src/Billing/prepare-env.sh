@@ -34,5 +34,3 @@ mkdir -p /etc/bitwarden/core
 mkdir -p /etc/bitwarden/logs
 mkdir -p /etc/bitwarden/ca-certificates
 chown -R $USERNAME:$GROUPNAME /etc/bitwarden
-
-exec gosu $USERNAME:$GROUPNAME dotnet /app/Billing.dll
