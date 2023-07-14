@@ -14,8 +14,7 @@ COPY prepare-env.sh /
 RUN chmod +x /prepare-env.sh
 RUN /prepare-env.sh
 
-# Needs healthcheck /alive endpoint in the app
-# HEALTHCHECK CMD curl -f http://localhost:5000/alive || exit 1
+HEALTHCHECK CMD curl -f http://localhost:5000/alive || exit 1
 
 COPY obj/build-output/publish .
 
