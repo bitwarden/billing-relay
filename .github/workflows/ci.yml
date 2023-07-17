@@ -37,7 +37,6 @@ jobs:
     needs:
       - test
       - version
-      - build-docker
     strategy:
       matrix:
         project-name:
