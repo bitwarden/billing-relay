@@ -1,6 +1,6 @@
 ---
 name: _docker
-run-name: Build docker image - ${{ inputs.project-name }} - push to ACR - ${{ inputs.push-docker-image }}
+run-name: "Build docker image - ${{ inputs.project-name }} Push to ACR: ${{ inputs.push-docker-image }}"
 
 on:
   workflow_call:
