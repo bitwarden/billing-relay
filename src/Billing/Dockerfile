@@ -2,9 +2,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0
 
 LABEL com.bitwarden.product="bitwarden"
 
-RUN apt-get update \
+RUN apt-get update -y \
     && apt-get install -y --no-install-recommends \
-        curl=latest+deb11u7 \
+        curl>=7.74.0* \
     && rm -rf /var/lib/apt/lists/*
 
 ENV ASPNETCORE_URLS http://+:5000
