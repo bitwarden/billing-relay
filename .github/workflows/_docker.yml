@@ -60,7 +60,7 @@ jobs:
       - name: Setup build artifact
         run: |
           mkdir -p ${{ inputs.project-path }}/${{ inputs.project-name }}/obj/build-output/publish
-          unzip ${{ matrix.project_name }}.zip \
+          unzip ${{ inputs.project_name }}.zip \
             -d ${{ inputs.project-path }}/${{ inputs.project-name }}/obj/build-output/publish
 
       - name: Build Docker image
