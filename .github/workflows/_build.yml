@@ -25,7 +25,7 @@ jobs:
         run: echo "value=$(cat global.json | jq -r '.sdk.version')" >> $GITHUB_OUTPUT
 
       - name: Set up dotnet
-        uses: actions/setup-dotnet@9211491ffb35dd6a6657ca4f45d43dfe6e97c829  # v2.0.0
+        uses: actions/setup-dotnet@3447fd6a9f9e57506b15f895c5b76d3b197dc7c2  # v3.2.0
         with:
           dotnet-version: ${{ steps.dotnet-version.outputs.value }}
 
