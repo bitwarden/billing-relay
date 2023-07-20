@@ -24,7 +24,6 @@ jobs:
     name: Build ${{ inputs.project-name }}
     runs-on: ubuntu-22.04
     steps:
-
       - name: Login to Azure - PROD Subscription
         uses: Azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2 # v1.4.7
         with:
@@ -39,7 +38,7 @@ jobs:
         env:
           VERSION: ${{ inputs.version }}
         run: |
-          IMAGE_TAG=$(echo "${GITHUB_REF:11}" | sed "s#/#-#g")  # slash safe branch name
+          IMAGE_TAG=$(echo "${GITHUB_REF#refs/heads/}" | sed "s#/#-#g")  # slash safe branch name
           if [[ "$IMAGE_TAG" == "main" ]]; then
             IMAGE_TAG=$VERSION
           fi
@@ -55,16 +54,16 @@ jobs:
       - name: Get build artifact
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
-          name: ${{ matrix.project_name }}.zip
+          name: ${{ inputs.project_name }}.zip
 
       - name: Setup build artifact
         run: |
           mkdir -p ${{ inputs.project-path }}/${{ inputs.project-name }}/obj/build-output/publish
-          unzip ${{ matrix.project_name }}.zip \
+          unzip ${{ inputs.project_name }}.zip \
             -d ${{ inputs.project-path }}/${{ inputs.project-name }}/obj/build-output/publish
 
       - name: Build Docker image
-        uses: docker/build-push-action@1104d471370f9806843c095c1db02b5a90c5f8b6 # v3.3.1
+        uses: docker/build-push-action@2eb1c1961a95fc15694676618e422e8ba1d63825 # v4.1.1
         with:
           context: ${{ inputs.project-path }}/${{ inputs.project-name }}
           file: ${{ inputs.project-path }}/${{ inputs.project-name }}/Dockerfile
