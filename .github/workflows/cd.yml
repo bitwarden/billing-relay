@@ -1,0 +1,47 @@
+---
+name: CD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  deployments: write
+  id-token: write
+  checks: write
+
+jobs:
+  version:
+    uses: ./.github/workflows/_version.yml
+
+  # test:
+  #   uses: ./.github/workflows/_test.yml
+  #   with:
+  #     project-name: Billing
+  #     project-path: ./src/Billing
+
+  build:
+    needs:
+      # - test
+      - version
+    uses: ./.github/workflows/_build.yml
+    with:
+      project-name: Billing
+      project-path: ./src/Billing
+      version: ${{ needs.version.outputs.version }}
+
+  build-push-docker:
+    needs:
+      # - test
+      - version
+      - build
+    uses: ./.github/workflows/_docker.yml
+    with:
+      project-name: Billing
+      project-path: ./src/Billing
+      version: ${{ needs.version.outputs.version }}
+      image-name: billing-relay
+      push-docker-image: true
