@@ -70,8 +70,8 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@2eb1c1961a95fc15694676618e422e8ba1d63825 # v4.1.1
         with:
-          context: ${{ inputs.project-path }}/${{ inputs.project-name }}
-          file: ${{ inputs.project-path }}/${{ inputs.project-name }}/Dockerfile
+          context: ${{ inputs.project-path }}
+          file: ${{ inputs.project-path }}/Dockerfile
           platforms: linux/amd64
           push: ${{ inputs.push-docker-image }}
           tags: ${{ steps.tag-list.outputs.tags }}
