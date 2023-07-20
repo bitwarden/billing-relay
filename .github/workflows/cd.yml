@@ -19,6 +19,9 @@ jobs:
 
   test:
     uses: ./.github/workflows/_test.yml
+    with:
+      project-name: Billing
+      project-path: ./src/Billing
 
   build:
     needs:
