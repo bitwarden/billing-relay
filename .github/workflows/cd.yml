@@ -34,7 +34,8 @@ jobs:
     needs:
       - test
       - version
-    uses: ./.github/workflows/_build.yml
+      - build
+    uses: ./.github/workflows/_docker.yml
     with:
       project-name: Billing
       project-path: ./src/Billing
