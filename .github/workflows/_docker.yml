@@ -59,12 +59,12 @@ jobs:
       - name: Get build artifact
         uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
         with:
-          name: ${{ inputs.project_name }}.zip
+          name: ${{ inputs.project-name }}.zip
 
       - name: Setup build artifact
         run: |
           mkdir -p ${{ inputs.project-path }}/${{ inputs.project-name }}/obj/build-output/publish
-          unzip ${{ inputs.project_name }}.zip \
+          unzip ${{ inputs.project-name }}.zip \
             -d ${{ inputs.project-path }}/${{ inputs.project-name }}/obj/build-output/publish
 
       - name: Build Docker image
