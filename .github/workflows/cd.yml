@@ -24,27 +24,19 @@ jobs:
     needs:
       - test
       - version
-    strategy:
-      matrix:
-        project-name:
-          - Billing
     uses: ./.github/workflows/_build.yml
     with:
-      project-name: ${{ matrix.project-name }}
-      project-path: ./src/${{ matrix.project-name }}
+      project-name: Billing
+      project-path: ./src/Billing
       version: ${{ needs.version.outputs.version }}
 
   build-push-docker:
     needs:
       - test
       - version
-    strategy:
-      matrix:
-        project-name:
-          - Billing
     uses: ./.github/workflows/_build.yml
     with:
-      project-name: ${{ matrix.project-name }}
-      project-path: ./src/${{ matrix.project-name }}
+      project-name: Billing
+      project-path: ./src/Billing
       version: ${{ needs.version.outputs.version }}
       push-docker-image: true
