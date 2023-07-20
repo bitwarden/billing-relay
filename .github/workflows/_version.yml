@@ -28,6 +28,7 @@ jobs:
       - name: Generate Version
         id: version
         run: |
+          ls -la
           git fetch --prune --tags
 
           echo "Calculating next version..."
