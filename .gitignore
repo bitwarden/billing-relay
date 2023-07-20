@@ -207,5 +207,5 @@ mail_dist/
 .vscode/*
 **/.vscode/*
 **/CoverageOutput/
-.idea/*
+.idea
 **/**.swp
