@@ -33,13 +33,13 @@ jobs:
           fetch-depth: 0
 
       - name: Login to Azure - PROD Subscription
-        if: ${{ inputs.push-docker-image == 'true' }}
+        if: ${{ inputs.push-docker-image }}
         uses: Azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2 # v1.4.7
         with:
           creds: ${{ secrets.AZURE_PROD_KV_CREDENTIALS }}
 
       - name: Login to PROD ACR
-        if: ${{ inputs.push-docker-image == 'true' }}
+        if: ${{ inputs.push-docker-image }}
         run: az acr login -n bitwardenprod
 
       ########## Generate image tag and build Docker image ##########
