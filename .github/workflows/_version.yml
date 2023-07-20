@@ -37,15 +37,19 @@ jobs:
             grep -Eo "[0-9]+\.[0-9]+"
           )
           major_version=$(echo $base_version | grep -Eo "[0-9]+" | head -1)
+          minor_version=$(echo $base_version | grep -Eo "[0-9]+" | sed -n 2p)
 
           latest_tag_version=$(git tag --sort=committerdate --list | tail -1)
           echo "  latest_tag_version: $latest_tag_version"
 
           major_latest_tag_version=$(echo $latest_tag_version | grep -Eo "[0-9]+" | head -1)
-
           echo "  major_latest_tag_version: $major_latest_tag_version"
 
-          if [[ "$major_latest_tag_version" != "$major_version" ]]; then
+          minor_latest_tag_version=$(echo $latest_tag_version | grep -Eo "[0-9]+" | sed -n 2p)
+          echo "  minor_latest_tag_version: $minor_latest_tag_version"
+
+          if [[ "$major_latest_tag_version" != "$major_version" ]] || \
+          [[ "$minor_latest_tag_version" != "$minor_version" ]]; then
             patch_version="0"
           else
             patch_version=$((${latest_tag_version##*.} + 1))
@@ -60,5 +64,5 @@ jobs:
           fi
 
           echo "  version: $base_version.$version_suffix"
-          echo "value=$base_version.$version_suffix" # >> $GITHUB_OUTPUT
+          echo "value=$base_version.$version_suffix" >> $GITHUB_OUTPUT
           echo "Done"
