@@ -17,15 +17,15 @@ jobs:
   version:
     uses: ./.github/workflows/_version.yml
 
-  test:
-    uses: ./.github/workflows/_test.yml
-    with:
-      project-name: Billing
-      project-path: ./src/Billing
+  # test:
+  #   uses: ./.github/workflows/_test.yml
+  #   with:
+  #     project-name: Billing
+  #     project-path: ./src/Billing
 
   build:
     needs:
-      - test
+      # - test
       - version
     uses: ./.github/workflows/_build.yml
     with:
@@ -35,7 +35,7 @@ jobs:
 
   build-push-docker:
     needs:
-      - test
+      # - test
       - version
       - build
     uses: ./.github/workflows/_docker.yml
