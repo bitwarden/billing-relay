@@ -39,7 +39,7 @@ jobs:
           creds: ${{ secrets.AZURE_PROD_KV_CREDENTIALS }}
 
       - name: Login to PROD ACR
-        if: ${{ github.event.inputs.push-docker-image == 'true' }}
+        if: ${{ inputs.push-docker-image }}
         run: az acr login -n bitwardenprod
 
       ########## Generate image tag and build Docker image ##########
