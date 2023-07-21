@@ -31,20 +31,42 @@ public partial class PayPalController : ControllerBase
     [HttpPost("ipn")]
     public async Task<IActionResult> PostIpnAsync([FromQuery] string key)
     {
-        _logger.LogDebug("Mothership: PayPal IPN has been hit");
+        _logger.LogDebug("PayPal IPN has been hit");
+
         var formData = Request.Form
-            .Select(x => new KeyValuePair<string, string>(x.Key, x.Value))
+            .Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString()))
             .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-        
+
         var cloudRegion = GetCloudRegionFromCustomFields(formData);
         var targetUrl = GetTargetUrl(key, cloudRegion);
 
         var formContent = new FormUrlEncodedContent(formData);
 
-        using var httpClient = _httpClientFactory.CreateClient();
-        var response = await httpClient.PostAsync(targetUrl, formContent);
+        try
+        {
+            using var httpClient = _httpClientFactory.CreateClient();
+            var response = await httpClient.PostAsync(targetUrl, formContent);
 
-        return StatusCode((int)response.StatusCode);
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok();
+            }
+
+            _logger.LogWarning(
+                "Encountered an unexpected error while calling PayPal IPN for the region \"{CloudRegion}\"",
+                cloudRegion);
+
+            return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception,
+                "Encountered an unexpected error while calling PayPal IPN for the region \"{CloudRegion}\"",
+                cloudRegion);
+
+            return StatusCode(500,
+                $"Encountered an unexpected error while calling PayPal IPN for the region {cloudRegion}");
+        }
     }
 
     /// <summary>
@@ -58,7 +80,7 @@ public partial class PayPalController : ControllerBase
         {
             return "US";
         }
-        
+
         var customFieldsCsv = formData["custom"];
         var cloudRegionRegexMatch = RegionValueCompiledRegex().Match(customFieldsCsv);
         var cloudRegion = cloudRegionRegexMatch.Success
