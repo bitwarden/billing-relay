@@ -46,3 +46,14 @@ jobs:
       image-name: billing-relay
       push-docker-image: true
     secrets: inherit
+
+  deploy-k8s-service:
+    needs:
+      - build-push-docker
+    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@DEVOPS-1490-Billing_Relay_Delivery_pipeline
+    with:
+      image-name: billing-relay
+      environment: Mothership
+      repository: mothership
+      tag: ${{ needs.version.outputs.version }}
+    secrets: inherit
