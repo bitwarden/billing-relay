@@ -45,6 +45,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
       image-name: billing-relay
       push-docker-image: true
+    secrets: inherit
 
   deploy-k8s-service:
     needs:
@@ -55,3 +56,4 @@ jobs:
       environment: mothership-cloud
       repository: mothership
       tag: ${{ needs.version.outputs.version }}
+    secrets: inherit
