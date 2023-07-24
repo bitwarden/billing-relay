@@ -15,7 +15,8 @@ COPY prepare-env.sh /
 RUN chmod +x /prepare-env.sh && \
     /prepare-env.sh
 
-HEALTHCHECK CMD curl -f http://localhost:5000/alive || exit 1
+# Enable healthcheck after implementing it in the service code
+# HEALTHCHECK CMD curl -f http://localhost:5000/alive || exit 1
 
 COPY obj/build-output/publish .
 
