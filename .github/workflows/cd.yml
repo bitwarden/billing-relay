@@ -51,6 +51,7 @@ jobs:
   deploy-k8s-service:
     needs:
       - build-push-docker
+      - version
     uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@5c311c40e6db0a8cc16c266a88269528d680d14b
     with:
       image-name: billing-relay
