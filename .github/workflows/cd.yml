@@ -58,4 +58,5 @@ jobs:
       environment: Mothership
       repository: mothership
       tag: ${{ needs.version.outputs.version }}
-    secrets: inherit
+    secrets:
+      AZURE_KV_CI_SERVICE_PRINCIPAL: ${{ secrets.AZURE_PROD_KV_CREDENTIALS }}
