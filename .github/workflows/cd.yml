@@ -12,6 +12,7 @@ permissions:
   deployments: write
   id-token: write
   checks: write
+  pull-requests: write
 
 jobs:
   version:
@@ -45,4 +46,17 @@ jobs:
       version: ${{ needs.version.outputs.version }}
       image-name: billing-relay
       push-docker-image: true
+    secrets: inherit
+
+  deploy-k8s-service:
+    needs:
+      - build-push-docker
+      - version
+    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@fix-delivery-pipeline
+    with:
+      image-name: billing-relay
+      environment: Mothership
+      overlay: mship-cloud
+      repository: mothership
+      tag: ${{ needs.version.outputs.version }}
     secrets: inherit
