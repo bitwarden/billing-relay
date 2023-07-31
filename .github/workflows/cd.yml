@@ -55,7 +55,7 @@ jobs:
     uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@fix-delivery-pipeline
     with:
       image-name: billing-relay
-      environment: Mothership
+      environment: production
       overlay: mship-cloud
       repository: mothership
       tag: ${{ needs.version.outputs.version }}
