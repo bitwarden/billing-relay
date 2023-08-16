@@ -16,20 +16,14 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     steps:
-      - name: Get pinned .NET version
-        id: dotnet-version
-        run: echo "value=$(cat global.json | jq -r '.sdk.version')" >> $GITHUB_OUTPUT
-
       - name: Setup dotnet
-        uses: actions/setup-dotnet@3447fd6a9f9e57506b15f895c5b76d3b197dc7c2  # v3.2.0
-        with:
-          dotnet-version: ${{ steps.dotnet-version.outputs.value }}
+        uses: actions/setup-dotnet@3447fd6a9f9e57506b15f895c5b76d3b197dc7c2 # v3.2.0
 
       - name: Display dotnet version
         run: dotnet --version
 
       - name: Checkout Repo
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9  # v3.5.3
+        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
 
       - uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
         with:
@@ -48,7 +42,7 @@ jobs:
         run: dotnet test ${{ inputs.project-path }}/${{ inputs.project-name }}.csproj --no-build --logger "trx;LogFileName=mothership-test-results.trx"
 
       - name: Report test results
-        uses: dorny/test-reporter@c9b3d0e2bd2a4e96aaf424dbaa31c46b42318226  # v1.6.0
+        uses: dorny/test-reporter@c9b3d0e2bd2a4e96aaf424dbaa31c46b42318226 # v1.6.0
         if: always()
         with:
           name: Test Results
