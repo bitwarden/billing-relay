@@ -1,6 +1,6 @@
 ---
 name: _docker
-run-name: "Build docker image - ${{ inputs.project-name }} - Push to ACR: ${{ inputs.push-docker-image }}"
+run-name: "Build ${{ inputs.project-name }} docker image and push ${{ inputs.push-docker-image }} to ACR"
 
 on:
   workflow_call:
@@ -23,26 +23,25 @@ on:
         required: true
 
 jobs:
-  build:
-    name: Build ${{ inputs.project-name }}
+  docker:
+    name: Docker
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Repo
+      - name: Check out repository
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           fetch-depth: 0
 
-      - name: Login to Azure - PROD Subscription
+      - name: Log in to Azure
         if: ${{ inputs.push-docker-image }}
         uses: Azure/login@92a5484dfaf04ca78a94597f4f19fea633851fa2 # v1.4.7
         with:
           creds: ${{ secrets.AZURE_PROD_KV_CREDENTIALS }}
 
-      - name: Login to PROD ACR
+      - name: Log in to ACR
         if: ${{ inputs.push-docker-image }}
         run: az acr login -n bitwardenprod
 
-      ########## Generate image tag and build Docker image ##########
       - name: Generate Docker image tag
         id: tag
         env:
@@ -67,7 +66,7 @@ jobs:
         with:
           name: ${{ inputs.project-name }}.zip
 
-      - name: Setup build artifact
+      - name: Set up build artifact
         run: |
           mkdir -p ${{ inputs.project-path }}/obj/build-output/publish
           unzip ${{ inputs.project-name }}.zip \

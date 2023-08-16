@@ -1,6 +1,6 @@
 ---
 name: _test
-run-name: Test
+run-name: Test ${{ inputs.project-name }}
 
 on:
   workflow_call:
@@ -14,14 +14,15 @@ on:
 
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Repo
+      - name: Check out repository
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           fetch-depth: 0
 
-      - name: Set up dotnet
+      - name: Set up .NET
         uses: actions/setup-dotnet@3447fd6a9f9e57506b15f895c5b76d3b197dc7c2 # v3.2.0
 
       - uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
@@ -37,7 +38,7 @@ jobs:
       - name: Build
         run: dotnet build --verbosity minimal ${{ inputs.project-path }}/${{ inputs.project-name }}.csproj
 
-      - name: Test with the dotnet CLI
+      - name: Test
         run: dotnet test ${{ inputs.project-path }}/${{ inputs.project-name }}.csproj --no-build --logger "trx;LogFileName=mothership-test-results.trx"
 
       - name: Report test results
