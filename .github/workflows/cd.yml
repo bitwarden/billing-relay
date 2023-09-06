@@ -52,10 +52,11 @@ jobs:
     needs:
       - build-push-docker
       - version
-    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@8f20e30181220b987cca242197ee88c9f9c6512e
+    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@62a865d629f2045d9a66b5f5ad036ea9d8d06fd3
     with:
       image-name: billing-relay
       environment: production
       repository: mothership
+      overlay: mship-cloud
       tag: ${{ needs.version.outputs.version }}
     secrets: inherit
