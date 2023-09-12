@@ -18,15 +18,15 @@ jobs:
   version:
     uses: ./.github/workflows/_version.yml
 
-  # test:
-  #   uses: ./.github/workflows/_test.yml
-  #   with:
-  #     project-name: Billing
-  #     project-path: ./src/Billing
+  test:
+    uses: ./.github/workflows/_test.yml
+    with:
+      project-name: Billing.Test
+      project-path: ./test/Billing.Test
 
   build:
     needs:
-      # - test
+      - test
       - version
     uses: ./.github/workflows/_build.yml
     with:
@@ -36,7 +36,7 @@ jobs:
 
   build-push-docker:
     needs:
-      # - test
+      - test
       - version
       - build
     uses: ./.github/workflows/_docker.yml
@@ -52,7 +52,7 @@ jobs:
     needs:
       - build-push-docker
       - version
-    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@fix-delivery-pipeline
+    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@62a865d629f2045d9a66b5f5ad036ea9d8d06fd3
     with:
       image-name: billing-relay
       environment: Mothership
