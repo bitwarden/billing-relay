@@ -1,0 +1,41 @@
+---
+name: _release
+run-name: Release ${{ inputs.version }}
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        type: string
+        required: true
+    outputs:
+      git-tag:
+        description: The Git tag that was created using the version number.
+        value: ${{ jobs.release.outputs.git-tag }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-22.04
+    env:
+      _BOT_EMAIL: 106330231+bitwarden-devops-bot@users.noreply.github.com
+      _BOT_NAME: bitwarden-devops-bot
+    outputs:
+      git-tag: ${{ steps.git-tag.outputs.tag }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        with:
+          fetch-depth: 0
+
+      - name: Create Git Tag
+        id: git-tag
+        run:
+          git config --local user.email "${{ env._BOT_EMAIL }}"
+          git config --local user.name "${{ env._BOT_NAME }}"
+
+          git tag v${{ inputs.version }}
+          git push origin v${{ inputs.version }}
+
+          echo "tag=v${{ inputs.version }}" >> $GITHUB_OUTPUT
+        
