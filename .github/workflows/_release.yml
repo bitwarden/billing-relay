@@ -38,4 +38,3 @@ jobs:
           git push origin v${{ inputs.version }}
 
           echo "tag=v${{ inputs.version }}" >> $GITHUB_OUTPUT
-        
