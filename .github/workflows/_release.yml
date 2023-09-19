@@ -30,7 +30,7 @@ jobs:
 
       - name: Create Git Tag
         id: git-tag
-        run:
+        run: |
           git config --local user.email "${{ env._BOT_EMAIL }}"
           git config --local user.name "${{ env._BOT_NAME }}"
 
