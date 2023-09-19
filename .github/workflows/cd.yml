@@ -18,6 +18,12 @@ jobs:
   version:
     uses: ./.github/workflows/_version.yml
 
+  tag:
+    needs: version
+    uses: ./github/workflows/_release.yml
+    with:
+      version: ${{ needs.version.outputs.version }}
+
   test:
     uses: ./.github/workflows/_test.yml
     with:
@@ -50,13 +56,12 @@ jobs:
 
   deploy-k8s-service:
     needs:
-      - build-push-docker
-      - version
+      - tag
     uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@0c4dc36fc4c452e81f2f60d24ee3669b72f56869
     with:
       image-name: billing-relay
       environment: Mothership
       overlay: mship-cloud
       repository: mothership
-      tag: ${{ needs.version.outputs.version }}
+      tag: ${{ needs.tag.outputs.git-tag }}
     secrets: inherit
