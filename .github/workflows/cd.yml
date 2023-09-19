@@ -20,7 +20,7 @@ jobs:
 
   tag:
     needs: version
-    uses: ./github/workflows/_release.yml
+    uses: ./.github/workflows/_release.yml
     with:
       version: ${{ needs.version.outputs.version }}
 
