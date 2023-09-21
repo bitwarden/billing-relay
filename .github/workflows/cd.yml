@@ -17,6 +17,8 @@ permissions:
 jobs:
   version:
     uses: ./.github/workflows/_version.yml
+    with:
+      is-release: true
 
   tag:
     needs: version
