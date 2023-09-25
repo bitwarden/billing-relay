@@ -34,6 +34,12 @@ jobs:
           git config --local user.email "${{ env._BOT_EMAIL }}"
           git config --local user.name "${{ env._BOT_NAME }}"
 
+          # Check if tag exists, set output then exit 0 if true.
+          if git log v${{ inputs.version }} >/dev/null 2>&1; then
+            echo "tag=v${{ inputs.version }}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           git tag v${{ inputs.version }}
           git push origin v${{ inputs.version }}
 
