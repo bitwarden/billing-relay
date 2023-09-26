@@ -60,7 +60,7 @@ jobs:
     needs:
       - tag
       - build-push-docker
-    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@0c4dc36fc4c452e81f2f60d24ee3669b72f56869
+    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@1c01d5fcfedb0e8a915394363decc4d714d90014
     with:
       image-name: billing-relay
       environment: Mothership
