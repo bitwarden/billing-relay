@@ -35,11 +35,10 @@ public partial class PayPalController : ControllerBase
 
         var formData = Request.Form
             .Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString()))
-            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            .ToList();
 
         var cloudRegion = GetCloudRegionFromCustomFields(formData);
         var targetUrl = GetTargetUrl(key, cloudRegion);
-
         var formContent = new FormUrlEncodedContent(formData);
 
         try
@@ -74,18 +73,22 @@ public partial class PayPalController : ControllerBase
     /// </summary>
     /// <param name="formData"></param>
     /// <returns></returns>
-    private static string GetCloudRegionFromCustomFields(Dictionary<string, string> formData)
+    private static string GetCloudRegionFromCustomFields(IEnumerable<KeyValuePair<string, string>> formData)
     {
-        if (!formData.ContainsKey("custom"))
+        var customField = formData.FirstOrDefault(kvp =>
+            kvp.Key.Equals("custom", StringComparison.OrdinalIgnoreCase));
+
+        if (customField.Equals(default(KeyValuePair<string, string>)))
         {
             return "US";
         }
 
-        var customFieldsCsv = formData["custom"];
+        var customFieldsCsv = customField.Value;
         var cloudRegionRegexMatch = RegionValueCompiledRegex().Match(customFieldsCsv);
         var cloudRegion = cloudRegionRegexMatch.Success
             ? cloudRegionRegexMatch.Groups["regionValue"].Value
             : "US";
+
         return cloudRegion;
     }
 
