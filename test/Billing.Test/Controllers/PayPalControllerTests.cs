@@ -125,11 +125,44 @@ public class PayPalControllerTests
         result.CheckFor(StatusCodes.Status500InternalServerError, $"Encountered an unexpected error while calling PayPal IPN for the region {region}");
     }
 
-    private void ConfigureRequestWith(Dictionary<string, StringValues> data)
+    [Theory]
+    [ClassData(typeof(CustomFieldsGenerator))]
+    public async Task PostIpnAsync_PreservesFormDataOrder((string, string, bool) theoryData)
     {
-        var context = new ControllerContext { HttpContext =
-            new DefaultHttpContext {
-                Request = { Form = new FormCollection(data) }
+        // Arrange
+        var (region, _, emptyCase) = theoryData;
+
+        var formData = GetFormData(_organizationId, _accountCredit, region, emptyCase);
+
+        ConfigureRequestWith(formData);
+        var messageHandler = ConfigureResponseWith(HttpStatusCode.OK, "OK");
+
+        // Act
+        _  = await _payPalController.PostIpnAsync(_key);
+
+        // Assert
+        _httpClientFactory.Received(1).CreateClient();
+        messageHandler.Invocations.Should().Be(1);
+
+        var requestContent = await ConvertToRequestContentAsync(formData);
+        messageHandler.RequestContent.Should().Be(requestContent);
+
+        var sentKeyValuePairs = ParseFormUrlEncodedPairs(messageHandler.RequestContent ?? string.Empty);
+        sentKeyValuePairs.Should().BeEquivalentTo(formData, options => options.WithStrictOrdering());
+    }
+
+    private void ConfigureRequestWith(List<KeyValuePair<string, string>> data)
+    {
+        var context = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                Request =
+                {
+                    Form = new FormCollection(data.ToDictionary(
+                        pair => pair.Key,
+                        pair => new StringValues(pair.Value)))
+                }
             }
         };
 
@@ -147,22 +180,32 @@ public class PayPalControllerTests
         return messageHandler;
     }
 
-    private static async Task<string> ConvertToRequestContentAsync(IDictionary<string, StringValues> formData)
+    private static async Task<string> ConvertToRequestContentAsync(List<KeyValuePair<string, string>> formData)
     {
-        var cleaned = formData
-            .Select(keyValuePair => new KeyValuePair<string, string>(keyValuePair.Key, keyValuePair.Value!));
-
-        var formUrlEncodedContent = new FormUrlEncodedContent(cleaned);
+        var formUrlEncodedContent = new FormUrlEncodedContent(formData);
 
         return await formUrlEncodedContent.ReadAsStringAsync();
     }
 
-    private static Dictionary<string, StringValues> GetFormData(
+    private static List<KeyValuePair<string, string>> GetFormData(
         string organizationId,
         string accountCredit,
         string region,
         bool emptyCase)
     => emptyCase ?
-        new Dictionary<string, StringValues>() :
-        new Dictionary<string, StringValues> { { "custom", $"organization_id:{organizationId},account_credit:{accountCredit},region:{region}" } };
+        new List<KeyValuePair<string, string>>() :
+        new List<KeyValuePair<string, string>> { new("custom", $"organization_id:{organizationId},account_credit:{accountCredit},region:{region}") };
+
+    private static IEnumerable<KeyValuePair<string, string>> ParseFormUrlEncodedPairs(string content) =>
+        content
+            .Split('&')
+            .Where(pair => pair.Contains('='))
+            .Select(pair =>
+            {
+                var splitPair = pair.Split('=');
+                return new KeyValuePair<string, string>(
+                    WebUtility.UrlDecode(splitPair[0]),
+                    WebUtility.UrlDecode(splitPair[1]));
+            })
+            .ToList();
 }
