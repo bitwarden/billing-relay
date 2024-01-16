@@ -34,7 +34,7 @@ jobs:
 
       - name: Log in to Azure
         if: ${{ inputs.push-docker-image }}
-        uses: Azure/login@de95379fe4dadc2defb305917eaa7e5dde727294 # v1.5.1
+        uses: Azure/login@e15b166166a8746d1a47596803bd8c1b595455cf # v1.6.0
         with:
           creds: ${{ secrets.AZURE_PROD_KV_CREDENTIALS }}
 
@@ -62,7 +62,7 @@ jobs:
         run: echo "tags=bitwardenprod.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
       - name: Get build artifact
-        uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
+        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
         with:
           name: ${{ inputs.project-name }}.zip
 
