@@ -15,3 +15,6 @@
 **/*.Dockerfile @bitwarden/dept-devops
 **/.dockerignore @bitwarden/dept-devops
 **/prepare-env.sh @bitwarden/dept-devops
+
+# Various owners
+.github/renovate.json
