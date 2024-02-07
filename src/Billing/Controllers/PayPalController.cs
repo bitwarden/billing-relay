@@ -101,16 +101,25 @@ public partial class PayPalController : ControllerBase
     /// <exception cref="Exception"></exception>
     private string GetTargetUrl(string key, string cloudRegion)
     {
-        var baseAddress = cloudRegion switch
+        string baseAddress;
+        switch (cloudRegion)
         {
-            "US" => _globalSettingOptionsSnapshot.Value
-                .USBillingBaseAddress
-                .TrimEnd('/'),
-            "EU" => _globalSettingOptionsSnapshot.Value
-                .EUBillingBaseAddress
-                .TrimEnd('/'),
-            _ => throw new Exception("Invalid datacenter detected")
-        };
+            case "EU":
+                baseAddress = _globalSettingOptionsSnapshot.Value.EUBillingBaseAddress.TrimEnd('/');
+                break;
+            default:
+            {
+                // Assuming that all others are going to US
+                if (cloudRegion != "US")
+                {
+                    _logger.LogWarning(
+                        "Expected cloud region to be either \"US\" or \"EU\", but received {CloudRegion}",
+                        cloudRegion);
+                }
+                baseAddress = _globalSettingOptionsSnapshot.Value.USBillingBaseAddress.TrimEnd('/');
+                break;
+            }
+        }
 
         var targetUrl = $"{baseAddress}/paypal/ipn?key={key}";
         return targetUrl;
