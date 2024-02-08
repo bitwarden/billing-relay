@@ -8,7 +8,7 @@ GPL v3.0:
 https://github.com/bitwarden/mothership/blob/main/LICENSE_GPL.txt
 
 Bitwarden License v1.0:
-https://github.com/bitwarden/web/blob/main/LICENSE_BITWARDEN.txt
+https://github.com/bitwarden/mothership/blob/main/LICENSE_BITWARDEN.txt
 
 No grant of any rights in the trademarks, service marks, or logos of Bitwarden is
 made (except as may be necessary to comply with the notice requirements as
