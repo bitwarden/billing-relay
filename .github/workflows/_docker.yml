@@ -62,7 +62,7 @@ jobs:
         run: echo "tags=bitwardenprod.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
       - name: Get build artifact
-        uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
+        uses: actions/download-artifact@eaceaf801fd36c7dee90939fad912460b18a1ffe # v4.1.2
         with:
           name: ${{ inputs.project-name }}.zip
 
