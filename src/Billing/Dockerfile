@@ -4,7 +4,7 @@ LABEL com.bitwarden.product="bitwarden"
 
 RUN apt-get update -y \
     && apt-get install -y --no-install-recommends \
-        curl \
+        curl=7.88.1* \
     && rm -rf /var/lib/apt/lists/*
 
 ENV ASPNETCORE_URLS http://+:5000
