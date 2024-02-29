@@ -1,10 +1,10 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
 LABEL com.bitwarden.product="bitwarden"
 
 RUN apt-get update -y \
     && apt-get install -y --no-install-recommends \
-        curl=7.74.0* \
+        curl=7.88.1* \
     && rm -rf /var/lib/apt/lists/*
 
 ENV ASPNETCORE_URLS http://+:5000
