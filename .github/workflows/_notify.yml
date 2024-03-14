@@ -1,0 +1,46 @@
+---
+name: _notify
+run-name: Notify ${{ inputs.slack-channel }} of ${{ inputs.version }} deployment
+
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        required: true
+        type: string
+      slack-channel:
+        required: true
+        type: string
+      version:
+          type: string
+          required: true
+      version-ref:
+        type: string
+        required: true
+      event:
+        type: string
+        required: true
+      environment:
+        type: string
+        required: true
+      workflow-url:
+        type: string
+        required: true
+      
+
+jobs:
+  notify:
+    name: Notify
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Notify Slack
+        uses: bitwarden/gh-actions/report-deployment-status-to-slack@main
+        with:
+          project: ${{ inputs.project-name }}
+          environment: ${{ inputs.environment }}
+          tag: ${{ inputs.version }}
+          commit-sha: ${{ inputs.version-ref }}
+          event: ${{ inputs.event }}
+          url: ${{ inputs.workflow-url }}
+          slack-channel: ${{ inputs.slack-channel }}
+          AZURE_KV_CI_SERVICE_PRINCIPAL: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}

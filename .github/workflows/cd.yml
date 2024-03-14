@@ -74,13 +74,12 @@ jobs:
     needs:
       - tag
       - deploy-k8s-service
-    uses: bitwarden/gh-actions/report-deployment-status-to-slack@main
+    uses: ./.github/workflows/_notify.yml
     with:
-      project: billing-relay
+      project-name: billing-relay
       environment: Mothership
-      tag: ${{ needs.tag.outputs.git-tag }}
-      commit-sha: ${{ needs.tag.outputs.git-tag-ref }}
+      version: ${{ needs.tag.outputs.git-tag }}
+      version-ref: ${{ needs.tag.outputs.git-tag-ref }}
       event: success
-      url: https://github.com/bitwarden/mothership/actions/runs/${{ github.run_id }}
-      AZURE_KV_CI_SERVICE_PRINCIPAL: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
+      workflow-url: https://github.com/bitwarden/mothership/actions/runs/${{ github.run_id }}
       slack-channel: release
