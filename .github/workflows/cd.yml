@@ -68,3 +68,19 @@ jobs:
       repository: mothership
       tag: ${{ needs.tag.outputs.git-tag }}
     secrets: inherit
+
+  notify-slack:
+    name: Noitfy Slack of deployment
+    needs: 
+      - tag
+      - deploy-k8s-service
+    uses: bitwarden/gh-actions/report-deployment-status-to-slack@main
+    with:
+      project: billing-replay
+      environment: Mothership
+      tag: ${{ needs.tag.outputs.git-tag }}
+      commit-sha: ${{ needs.tag.outputs.git-tag-ref }}
+      event: success
+      url: https://github.com/bitwarden/mothership/actions/runs/${{ github.run_id }}
+      AZURE_KV_CI_SERVICE_PRINCIPAL: ${{ secrets.AZURE_KV_CI_SERVICE_PRINCIPAL }}
+      slack-channel: release
