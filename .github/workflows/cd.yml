@@ -71,7 +71,7 @@ jobs:
 
   notify-slack:
     name: Noitfy Slack of deployment
-    needs: 
+    needs:
       - tag
       - deploy-k8s-service
     uses: bitwarden/gh-actions/report-deployment-status-to-slack@main
