@@ -76,7 +76,7 @@ jobs:
       - deploy-k8s-service
     uses: bitwarden/gh-actions/report-deployment-status-to-slack@main
     with:
-      project: billing-replay
+      project: billing-relay
       environment: Mothership
       tag: ${{ needs.tag.outputs.git-tag }}
       commit-sha: ${{ needs.tag.outputs.git-tag-ref }}
