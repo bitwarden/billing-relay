@@ -12,6 +12,9 @@ on:
       git-tag:
         description: The Git tag that was created using the version number.
         value: ${{ jobs.release.outputs.git-tag }}
+      git-tag-ref:
+        description: The Git hash that the tag points to.
+        value: ${{ jobs.release.outputs.git-tag-ref }}
 
 jobs:
   release:
