@@ -83,3 +83,4 @@ jobs:
       event: success
       workflow-url: https://github.com/bitwarden/mothership/actions/runs/${{ github.run_id }}
       slack-channel: release
+    secrets: inherit
