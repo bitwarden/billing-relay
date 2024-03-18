@@ -22,6 +22,7 @@ jobs:
       _BOT_NAME: bitwarden-devops-bot
     outputs:
       git-tag: ${{ steps.git-tag.outputs.tag }}
+      git-tag-ref: ${{ steps.git-tag.outputs.tag_ref }}
     steps:
       - name: Check out repository
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -44,3 +45,4 @@ jobs:
           git push origin v${{ inputs.version }}
 
           echo "tag=v${{ inputs.version }}" >> $GITHUB_OUTPUT
+          echo "tag_ref=$(git rev-list -n 1 tags/v${{ inputs.version }})" >> $GITHUB_OUTPUT

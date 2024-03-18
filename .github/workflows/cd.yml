@@ -68,3 +68,18 @@ jobs:
       repository: mothership
       tag: ${{ needs.tag.outputs.git-tag }}
     secrets: inherit
+
+  notify-slack:
+    name: Noitfy Slack of deployment
+    needs:
+      - tag
+      - deploy-k8s-service
+    uses: ./.github/workflows/_notify.yml
+    with:
+      project-name: billing-relay
+      environment: Mothership
+      version: ${{ needs.tag.outputs.git-tag }}
+      version-ref: ${{ needs.tag.outputs.git-tag-ref }}
+      event: success
+      workflow-url: https://github.com/bitwarden/mothership/actions/runs/${{ github.run_id }}
+      slack-channel: release
