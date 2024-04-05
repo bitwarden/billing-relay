@@ -25,7 +25,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@4d6c8fcf3c8f7a60068d26b594648e99df24cee3 # v4.0.0
 
-      - uses: actions/cache@ab5e6d0c87105b4c9c2047343972218f562e4319 # v4.0.1
+      - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
@@ -42,7 +42,7 @@ jobs:
         run: dotnet test ${{ inputs.project-path }}/${{ inputs.project-name }}.csproj --no-build --logger "trx;LogFileName=mothership-test-results.trx"
 
       - name: Report test results
-        uses: dorny/test-reporter@eaa763f6ffc21c7a37837f56cd5f9737f27fc6c8 # v1.8.0
+        uses: dorny/test-reporter@c40d89d5e987cd80f3a32b3c233556e22bdca958 # v1.9.0
         if: always()
         with:
           name: Test Results
