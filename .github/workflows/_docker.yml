@@ -62,7 +62,7 @@ jobs:
         run: echo "tags=bitwardenprod.azurecr.io/${IMAGE_NAME}:${IMAGE_TAG}" >> $GITHUB_OUTPUT
 
       - name: Get build artifact
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: ${{ inputs.project-name }}.zip
 
@@ -73,7 +73,7 @@ jobs:
             -d ${{ inputs.project-path }}/obj/build-output/publish
 
       - name: Build Docker image
-        uses: docker/build-push-action@31159d49c0d4756269a0940a750801a1ea5d7003 # v6.1.0
+        uses: docker/build-push-action@1a162644f9a7e87d8f4b053101d1d9a712edc18c # v6.3.0
         with:
           context: ${{ inputs.project-path }}
           file: ${{ inputs.project-path }}/Dockerfile
