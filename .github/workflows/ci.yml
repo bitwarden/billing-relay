@@ -6,9 +6,10 @@ on:
   pull_request:
 
 permissions:
-  id-token: write
-  contents: read
   checks: write
+  contents: read
+  id-token: write
+  pull-requests: write
 
 jobs:
   version:
