@@ -8,10 +8,10 @@ on:
       - main
 
 permissions:
+  checks: write
   contents: write
   deployments: write
   id-token: write
-  checks: write
   pull-requests: write
 
 jobs:
