@@ -80,3 +80,5 @@ jobs:
           platforms: linux/amd64
           push: ${{ inputs.push-docker-image }}
           tags: ${{ steps.tag-list.outputs.tags }}
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
