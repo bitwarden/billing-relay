@@ -1,19 +1,30 @@
 using Billing.Options;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = HostBuilderExtensions.GetBootstrapLogger();
 
-// Add services to the container.
+try
+{
+    var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddHttpClient();
-builder.Services.Configure<GlobalSettingsOptions>(builder.Configuration.GetSection("globalSettings"));
+    builder.UseBitwardenDefaults();
 
-var app = builder.Build();
+    builder.Services.AddControllers();
+    builder.Services.AddHttpClient();
+    builder.Services.Configure<GlobalSettingsOptions>(builder.Configuration.GetSection("globalSettings"));
 
-app.UseHttpsRedirection();
+    var app = builder.Build();
+    app.UseHttpsRedirection();
+    app.UseAuthorization();
+    app.MapControllers();
 
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "An unhandled exception occured during bootstrapping");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
