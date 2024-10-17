@@ -24,6 +24,6 @@
 .github/workflows/_release.yml @bitwarden/team-billing-dev @bitwarden/dept-bre
 .github/workflows/_version.yml @bitwarden/team-billing-dev @bitwarden/dept-bre
 
-# BRE
-.github/workflows/cd.yml @bitwarden/dept-bre
+## BRE team owns these workflows ##
 .github/workflows/_notify.yml @bitwarden/dept-bre
+.github/workflows/cd.yml @bitwarden/dept-bre
