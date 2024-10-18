@@ -1,4 +1,3 @@
----
 name: _docker
 run-name: "Build ${{ inputs.project-name }} docker image and push ${{ inputs.push-docker-image }} to ACR"
 
