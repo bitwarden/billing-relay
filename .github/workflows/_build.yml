@@ -1,4 +1,3 @@
----
 name: _build
 run-name: Build ${{ inputs.project-name }}
 
