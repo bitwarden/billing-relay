@@ -7,14 +7,23 @@
 # Default file owners.
 * @bitwarden/team-billing-dev
 
-# DevOps for Actions and other workflow changes.
-.github/workflows @bitwarden/dept-devops
-
-# DevOps for Docker changes.
-**/Dockerfile @bitwarden/dept-devops
-**/*.Dockerfile @bitwarden/dept-devops
-**/.dockerignore @bitwarden/dept-devops
-**/prepare-env.sh @bitwarden/dept-devops
-
 # Various owners
 .github/renovate.json
+
+## Docker files have shared ownership ##
+**/Dockerfile @bitwarden/team-billing-dev @bitwarden/dept-bre
+**/*.Dockerfile @bitwarden/team-billing-dev @bitwarden/dept-bre
+**/.dockerignore @bitwarden/team-billing-dev @bitwarden/dept-bre
+**/entrypoint.sh @bitwarden/team-billing-dev @bitwarden/dept-bre
+
+## These are shared workflows ##
+.github/workflows/_build.yml @bitwarden/dept-bre @bitwarden/team-billing-dev
+.github/workflows/_docker.yml @bitwarden/dept-bre @bitwarden/team-billing-dev
+.github/workflows/_release.yml @bitwarden/dept-bre @bitwarden/team-billing-dev
+.github/workflows/_test.yml @bitwarden/dept-bre @bitwarden/team-billing-dev
+.github/workflows/_version.yml @bitwarden/dept-bre @bitwarden/team-billing-dev
+.github/workflows/ci.yml @bitwarden/dept-bre @bitwarden/team-billing-dev
+
+## BRE team owns these workflows ##
+.github/workflows/_notify.yml @bitwarden/dept-bre
+.github/workflows/cd.yml @bitwarden/dept-bre
