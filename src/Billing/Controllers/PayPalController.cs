@@ -7,12 +7,22 @@ namespace Billing.Controllers;
 
 [ApiController]
 [Route("paypal")]
-public partial class PayPalController(
-    ILogger<PayPalController> logger,
-    IHttpClientFactory httpClientFactory,
-    IOptions<GlobalSettingsOptions> globalSettingOptionsSnapshot)
-    : ControllerBase
+public partial class PayPalController : ControllerBase
 {
+    private readonly ILogger<PayPalController> _logger;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IOptionsSnapshot<GlobalSettingsOptions> _globalSettingOptionsSnapshot;
+
+    public PayPalController(
+        ILogger<PayPalController> logger,
+        IHttpClientFactory httpClientFactory,
+        IOptionsSnapshot<GlobalSettingsOptions> globalSettingOptionsSnapshot)
+    {
+        _logger = logger;
+        _httpClientFactory = httpClientFactory;
+        _globalSettingOptionsSnapshot = globalSettingOptionsSnapshot;
+    }
+
     /// <summary>
     /// Handles the logic for routing PayPal IPN traffic depending on the datacenter
     /// </summary>
@@ -21,7 +31,7 @@ public partial class PayPalController(
     [HttpPost("ipn")]
     public async Task<IActionResult> PostIpnAsync([FromQuery] string key)
     {
-        logger.LogDebug("PayPal IPN has been hit");
+        _logger.LogDebug("PayPal IPN has been hit");
 
         var formData = Request.Form
             .Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString()))
@@ -33,7 +43,7 @@ public partial class PayPalController(
 
         try
         {
-            using var httpClient = httpClientFactory.CreateClient();
+            using var httpClient = _httpClientFactory.CreateClient();
             var response = await httpClient.PostAsync(targetUrl, formContent);
 
             if (response.IsSuccessStatusCode)
@@ -41,7 +51,7 @@ public partial class PayPalController(
                 return Ok();
             }
 
-            logger.LogWarning(
+            _logger.LogWarning(
                 "Encountered an unexpected error while calling PayPal IPN for the region \"{CloudRegion}\"",
                 cloudRegion);
 
@@ -49,7 +59,7 @@ public partial class PayPalController(
         }
         catch (Exception exception)
         {
-            logger.LogError(exception,
+            _logger.LogError(exception,
                 "Encountered an unexpected error while calling PayPal IPN for the region \"{CloudRegion}\"",
                 cloudRegion);
 
@@ -91,25 +101,16 @@ public partial class PayPalController(
     /// <exception cref="Exception"></exception>
     private string GetTargetUrl(string key, string cloudRegion)
     {
-        string baseAddress;
-        switch (cloudRegion)
+        var baseAddress = cloudRegion switch
         {
-            case "EU":
-                baseAddress = globalSettingOptionsSnapshot.Value.EUBillingBaseAddress.TrimEnd('/');
-                break;
-            default:
-            {
-                // Assuming that all others are going to US
-                if (cloudRegion != "US")
-                {
-                    logger.LogWarning(
-                        "Expected cloud region to be either \"US\" or \"EU\", but received {CloudRegion}",
-                        cloudRegion);
-                }
-                baseAddress = globalSettingOptionsSnapshot.Value.USBillingBaseAddress.TrimEnd('/');
-                break;
-            }
-        }
+            "US" => _globalSettingOptionsSnapshot.Value
+                .USBillingBaseAddress
+                .TrimEnd('/'),
+            "EU" => _globalSettingOptionsSnapshot.Value
+                .EUBillingBaseAddress
+                .TrimEnd('/'),
+            _ => throw new Exception("Invalid datacenter detected")
+        };
 
         var targetUrl = $"{baseAddress}/paypal/ipn?key={key}";
         return targetUrl;
