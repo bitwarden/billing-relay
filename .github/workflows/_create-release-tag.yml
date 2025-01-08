@@ -1,5 +1,5 @@
 name: _create-release-tag
-run-name: Create release tag: ${{ inputs.version }}
+run-name: Create release tag ${{ inputs.version }}
 
 on:
   workflow_call:
