@@ -23,7 +23,7 @@ jobs:
   tag:
     name: Create Release Tag
     needs: version
-    uses: ./.github/workflows/_release.yml
+    uses: ./.github/workflows/_create-release-rag.yml
     with:
       version: ${{ needs.version.outputs.version }}
 
@@ -76,6 +76,7 @@ jobs:
 
   notify-slack:
     name: Noitfy Slack of deployment
+    if: ${{ needs.deploy-k8s-service.outputs.deployment-status }} == 'success'
     needs:
       - tag
       - deploy-k8s-service

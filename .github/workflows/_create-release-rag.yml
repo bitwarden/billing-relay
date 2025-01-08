@@ -1,5 +1,5 @@
-name: _release
-run-name: Release ${{ inputs.version }}
+name: _create-release-tag
+run-name: Create release tag: ${{ inputs.version }}
 
 on:
   workflow_call:
@@ -17,7 +17,7 @@ on:
 
 jobs:
   release:
-    name: Release
+    name: Create Release Tag
     runs-on: ubuntu-22.04
     env:
       _BOT_EMAIL: 106330231+bitwarden-devops-bot@users.noreply.github.com
