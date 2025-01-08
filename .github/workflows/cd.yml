@@ -23,7 +23,7 @@ jobs:
   tag:
     name: Create Release Tag
     needs: version
-    uses: ./.github/workflows/_create-release-rag.yml
+    uses: ./.github/workflows/_create-release-tag.yml
     with:
       version: ${{ needs.version.outputs.version }}
 
