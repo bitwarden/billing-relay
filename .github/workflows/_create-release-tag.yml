@@ -17,7 +17,7 @@ on:
 
 jobs:
   release:
-    name: Create Release Tag
+    name: Create release tag
     runs-on: ubuntu-22.04
     env:
       _BOT_EMAIL: 106330231+bitwarden-devops-bot@users.noreply.github.com
