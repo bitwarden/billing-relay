@@ -15,27 +15,27 @@ permissions:
 
 jobs:
   version:
-    name: Calculate Version
+    name: Calculate version
     uses: ./.github/workflows/_version.yml
     with:
       is-release: true
 
   tag:
-    name: Create Release Tag
+    name: Create release tag
     needs: version
-    uses: ./.github/workflows/_release.yml
+    uses: ./.github/workflows/_create-release-tag.yml
     with:
       version: ${{ needs.version.outputs.version }}
 
   test:
-    name: Run Test
+    name: Run test
     uses: ./.github/workflows/_test.yml
     with:
       project-name: Billing.Test
       project-path: ./test/Billing.Test
 
   build:
-    name: Run Build
+    name: Run build
     needs:
       - test
       - version
@@ -46,7 +46,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
 
   build-push-docker:
-    name: Build and Push Docker Image
+    name: Build and push Docker image
     needs:
       - test
       - version
@@ -76,6 +76,7 @@ jobs:
 
   notify-slack:
     name: Noitfy Slack of deployment
+    if: ${{ needs.deploy-k8s-service.outputs.deployment-status }} == 'success'
     needs:
       - tag
       - deploy-k8s-service
