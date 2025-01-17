@@ -45,4 +45,4 @@ jobs:
       project-path: ./src/Billing
       version: ${{ needs.version.outputs.version }}
       image-name: billing-relay
-      push-docker-image: false
+      push-docker-image: true
