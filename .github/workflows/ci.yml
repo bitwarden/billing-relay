@@ -46,3 +46,4 @@ jobs:
       version: ${{ needs.version.outputs.version }}
       image-name: billing-relay
       push-docker-image: true
+    secrets: inherit
