@@ -7,7 +7,7 @@ replicaCount: 2
 
 # This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
-  repository: bitwardenprod.azurecr.io/billing-relay
+  repository: nowhere.azurecr.io/billing-relay
   pullPolicy: IfNotPresent
 
   # Define a tag OR sha256 hash of the image
