@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Bitwarden.Server.Sdk/0.1.10">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
