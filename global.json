@@ -1,4 +1,7 @@
 {
+  "msbuild-sdks": {
+    "Bitwarden.Server.Sdk": "0.1.10"
+  },
   "sdk": {
     "version": "8.0.100",
     "rollForward": "latestFeature"
