@@ -6,7 +6,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'charts/**'
+      - "charts/**"
 
 permissions:
   checks: write
@@ -72,7 +72,7 @@ jobs:
       image-names: billing-relay
       environment: Mothership
       overlay: mship-cloud
-      repository: mothership
+      repository: billing-relay
       tag: ${{ needs.tag.outputs.git-tag }}
     secrets: inherit
 
@@ -89,6 +89,6 @@ jobs:
       version: ${{ needs.tag.outputs.git-tag }}
       version-ref: ${{ needs.tag.outputs.git-tag-ref }}
       event: success
-      workflow-url: https://github.com/bitwarden/mothership/actions/runs/${{ github.run_id }}
+      workflow-url: https://github.com/bitwarden/billing-relay/actions/runs/${{ github.run_id }}
       slack-channel: release
     secrets: inherit
