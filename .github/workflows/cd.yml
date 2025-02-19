@@ -71,7 +71,7 @@ jobs:
     with:
       image-names: billing-relay
       environment: Mothership
-      overlay: mship-cloud
+      overlay: mship-cloud-netnew
       repository: billing-relay
       tag: ${{ needs.tag.outputs.git-tag }}
     secrets: inherit
