@@ -1,3 +1,3 @@
 # Billing Relay
 
-A service for relaying billing events.
+An amazing service for relaying billing events.
