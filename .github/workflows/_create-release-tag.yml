@@ -1,5 +1,5 @@
-name: _release
-run-name: Release ${{ inputs.version }}
+name: _create-release-tag
+run-name: Create release tag ${{ inputs.version }}
 
 on:
   workflow_call:
@@ -17,7 +17,7 @@ on:
 
 jobs:
   release:
-    name: Release
+    name: Create release tag
     runs-on: ubuntu-22.04
     env:
       _BOT_EMAIL: 106330231+bitwarden-devops-bot@users.noreply.github.com
@@ -31,7 +31,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create Git Tag
+      - name: Create Git tag
         id: git-tag
         run: |
           git config --local user.email "${{ env._BOT_EMAIL }}"

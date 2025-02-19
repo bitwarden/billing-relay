@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - "charts/**"
 
 permissions:
   checks: write
@@ -15,27 +17,27 @@ permissions:
 
 jobs:
   version:
-    name: Calculate Version
+    name: Calculate version
     uses: ./.github/workflows/_version.yml
     with:
       is-release: true
 
   tag:
-    name: Create Release Tag
+    name: Create release tag
     needs: version
-    uses: ./.github/workflows/_release.yml
+    uses: ./.github/workflows/_create-release-tag.yml
     with:
       version: ${{ needs.version.outputs.version }}
 
   test:
-    name: Run Test
+    name: Run test
     uses: ./.github/workflows/_test.yml
     with:
       project-name: Billing.Test
       project-path: ./test/Billing.Test
 
   build:
-    name: Run Build
+    name: Run build
     needs:
       - test
       - version
@@ -46,7 +48,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
 
   build-push-docker:
-    name: Build and Push Docker Image
+    name: Build and push Docker image
     needs:
       - test
       - version
@@ -65,17 +67,18 @@ jobs:
     needs:
       - tag
       - build-push-docker
-    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@main
+    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@b9c4c99a4cb0330465af8b30c9a7a4e8202dec25
     with:
-      image-name: billing-relay
+      image-names: billing-relay
       environment: Mothership
       overlay: mship-cloud
-      repository: mothership
+      repository: billing-relay
       tag: ${{ needs.tag.outputs.git-tag }}
     secrets: inherit
 
   notify-slack:
     name: Noitfy Slack of deployment
+    if: ${{ needs.deploy-k8s-service.outputs.deployment-status }} == 'success'
     needs:
       - tag
       - deploy-k8s-service
@@ -86,6 +89,6 @@ jobs:
       version: ${{ needs.tag.outputs.git-tag }}
       version-ref: ${{ needs.tag.outputs.git-tag-ref }}
       event: success
-      workflow-url: https://github.com/bitwarden/mothership/actions/runs/${{ github.run_id }}
+      workflow-url: https://github.com/bitwarden/billing-relay/actions/runs/${{ github.run_id }}
       slack-channel: release
     secrets: inherit

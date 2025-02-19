@@ -3,6 +3,8 @@ name: CI
 on:
   workflow_dispatch:
   pull_request:
+    paths-ignore:
+      - 'charts/**'
 
 permissions:
   checks: write
@@ -12,18 +14,18 @@ permissions:
 
 jobs:
   version:
-    name: Calculate Version
+    name: Calculate version
     uses: ./.github/workflows/_version.yml
 
   test:
-    name: Run Test
+    name: Run test
     uses: ./.github/workflows/_test.yml
     with:
       project-name: Billing.Test
       project-path: ./test/Billing.Test
 
   build:
-    name: Run Build
+    name: Run build
     needs:
       - test
       - version
@@ -34,7 +36,7 @@ jobs:
       version: ${{ needs.version.outputs.version }}
 
   build-push-docker:
-    name: Build Docker Image
+    name: Build Docker image
     needs:
       - test
       - version
@@ -45,4 +47,5 @@ jobs:
       project-path: ./src/Billing
       version: ${{ needs.version.outputs.version }}
       image-name: billing-relay
-      push-docker-image: false
+      push-docker-image: true
+    secrets: inherit
