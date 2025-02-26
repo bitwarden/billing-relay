@@ -12,9 +12,28 @@ on:
         required: true
 
 jobs:
+  check-secrets:
+    name: Check for secrets
+    runs-on: ubuntu-22.04
+    outputs:
+      available: ${{ steps.check-secrets.outputs.available }}
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check
+        id: check-secrets
+        run: |
+          if [ "${{ secrets.AVAILABLE }}" != '' ]; then
+            echo "available=true" >> $GITHUB_OUTPUT;
+          else
+            echo "available=false" >> $GITHUB_OUTPUT;
+          fi
+
   testing:
     name: Test
     runs-on: ubuntu-22.04
+    needs: check-secrets
     permissions:
       checks: write
       contents: read
@@ -48,7 +67,7 @@ jobs:
 
       - name: Report test results
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
-        if: ${{ !github.event.repository.fork && !cancelled() }}
+        if: ${{ needs.check-secrets.outputs.available == 'true' && !cancelled() }}
         with:
           name: Test Results
           path: "**/test-results.trx"
