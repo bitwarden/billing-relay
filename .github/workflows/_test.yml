@@ -46,6 +46,20 @@ jobs:
       - name: Test
         run: dotnet test ${{ inputs.project-path }}/${{ inputs.project-name }}.csproj --no-build --logger "trx;LogFileName=test-results.trx"
 
+      - name: Get user permission
+        id: get-permission
+        uses: actions-cool/check-user-permission@7b90a27f92f3961b368376107661682c441f6103 # v2.3.0
+        with:
+          require: write
+          check-contributor: true
+          username: ${{ github.triggering_actor }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: echo "user-permission = ${{ steps.get-permission.outputs.user-permission }}"
+      - run: echo "require-result = ${{ steps.get-permission.outputs.require-result }}"
+      - run: echo "check-result = ${{ steps.get-permission.outputs.check-result }}"
+
       - name: Report test results
         uses: dorny/test-reporter@31a54ee7ebcacc03a09ea97a7e5465a47b84aea5 # v1.9.1
         if: ${{ !github.event.repository.fork && !cancelled() }}
