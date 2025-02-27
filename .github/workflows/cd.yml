@@ -64,17 +64,21 @@ jobs:
 
   deploy-k8s-service:
     name: Deploy to Kubernetes
+    runs-on: ubuntu-22.04
     needs:
       - tag
       - build-push-docker
-    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@b9c4c99a4cb0330465af8b30c9a7a4e8202dec25
-    with:
-      image-names: billing-relay
-      environment: Mothership
-      overlay: mship-cloud-netnew
-      repository: billing-relay
-      tag: ${{ needs.tag.outputs.git-tag }}
-    secrets: inherit
+
+    steps:
+      - name: Dispatch deployment
+        run: >
+          gh workflow run _deploy_k8s_service
+          --repo bitwarden/devops
+          --field image-names=billing-relay
+          --field environment=Mothership
+          --field overlay=mship-cloud-netnew
+          --field repository=billing-relay
+          --field tag=${{ needs.tag.outputs.git-tag }}
 
   notify-slack:
     name: Noitfy Slack of deployment
