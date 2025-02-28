@@ -64,31 +64,21 @@ jobs:
 
   deploy-k8s-service:
     name: Deploy to Kubernetes
+    runs-on: ubuntu-22.04
     needs:
       - tag
       - build-push-docker
-    uses: bitwarden/devops/.github/workflows/_deploy_k8s_service.yml@b9c4c99a4cb0330465af8b30c9a7a4e8202dec25
-    with:
-      image-names: billing-relay
-      environment: Mothership
-      overlay: mship-cloud-netnew
-      repository: billing-relay
-      tag: ${{ needs.tag.outputs.git-tag }}
-    secrets: inherit
 
-  notify-slack:
-    name: Noitfy Slack of deployment
-    if: ${{ needs.deploy-k8s-service.outputs.deployment-status }} == 'success'
-    needs:
-      - tag
-      - deploy-k8s-service
-    uses: ./.github/workflows/_notify.yml
-    with:
-      project-name: billing-relay
-      environment: Mothership
-      version: ${{ needs.tag.outputs.git-tag }}
-      version-ref: ${{ needs.tag.outputs.git-tag-ref }}
-      event: success
-      workflow-url: https://github.com/bitwarden/billing-relay/actions/runs/${{ github.run_id }}
-      slack-channel: release
-    secrets: inherit
+    steps:
+      - name: Dispatch deployment
+        env:
+          GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+        run: >
+          gh workflow run deploy-k8s-service.yml
+          --repo bitwarden/devops
+          --field image-names=billing-relay
+          --field environment=Mothership
+          --field overlay=mship-cloud-netnew
+          --field project-name="Billing Relay"
+          --field repository=billing-relay
+          --field tag=${{ needs.tag.outputs.git-tag }}
