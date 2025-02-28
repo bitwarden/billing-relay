@@ -74,7 +74,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
         run: >
-          gh workflow run deploy-k8s-service
+          gh workflow run deploy-k8s-service.yml
           --repo bitwarden/devops
           --field image-names=billing-relay
           --field environment=Mothership
