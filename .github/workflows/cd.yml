@@ -72,7 +72,7 @@ jobs:
     steps:
       - name: Dispatch deployment
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
         run: >
           gh workflow run deploy-k8s-service
           --repo bitwarden/devops
