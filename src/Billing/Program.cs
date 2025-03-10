@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.UseBitwardenDefaults();
+builder.UseBitwardenSdk();
 
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
