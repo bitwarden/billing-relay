@@ -26,8 +26,8 @@ config:
   Logging__Console__FormatterOptions__IncludeScopes: true
   Logging__LogLevel__Default: Debug
   Logging__LogLevel__Microsoft_AspNetCore: Debug
-  globalSettings__euBillingBaseAddress: https://billing.bitwarden.eu
-  globalSettings__usBillingBaseAddress: https://billing.bitwarden.com
+  globalSettings__euBillingBaseAddress: https://billing.euqa.bitwarden.pw
+  globalSettings__usBillingBaseAddress: https://billing.qa.bitwarden.pw
 
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
