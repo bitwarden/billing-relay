@@ -3,8 +3,7 @@ name: CI
 on:
   workflow_dispatch:
   pull_request:
-    paths-ignore:
-      - "charts/**"
+    types: [opened, synchronize]
 
 permissions:
   checks: write
