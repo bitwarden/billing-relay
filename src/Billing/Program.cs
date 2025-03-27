@@ -19,7 +19,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHealthChecks("/healthzz", new HealthCheckOptions
+app.MapHealthChecks("/healthzzz", new HealthCheckOptions
 {
     AllowCachingResponses = false
 });
