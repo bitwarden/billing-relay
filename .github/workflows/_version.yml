@@ -60,7 +60,8 @@ jobs:
           version_suffix=$patch_version
 
           if [[ "${{ inputs.is-release }}" == "false" ]]; then
-            version_suffix=$version_suffix-${GITHUB_SHA:0:7}
+            commit_sha=${{ github.event.pull_request.head.sha || github.sha }}
+            version_suffix=$version_suffix-${commit_sha:0:7}
           fi
 
           echo "  version: $base_version.$version_suffix"
