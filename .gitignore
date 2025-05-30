@@ -209,3 +209,7 @@ mail_dist/
 **/CoverageOutput/
 .idea
 **/**.swp
+
+# Development secrets (never commit these)
+**/secrets.json
+secrets.json
