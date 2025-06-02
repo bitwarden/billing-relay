@@ -16,7 +16,7 @@ on:
       k6_flags:
         type: string
         description: "Additional k6 flags"
-      billing-relay-env-url:
+      billing_relay_env_url:
         type: string
         description: "URL of the billing relay environment"
         default: "https://billingrelay.qa.bitwarden.pw"
@@ -79,7 +79,7 @@ jobs:
           --pid host
     env:
       _K6_FLAGS: >-
-        --tag test-id=${{ inputs.test_id }}
+        --tag test-id=${{ inputs.test_id || 'billing-relay-load-test' }}
         -o experimental-opentelemetry
         ${{ inputs.k6_flags }}
     steps:
@@ -98,7 +98,7 @@ jobs:
           K6_OTEL_METRIC_PREFIX: k6_
           K6_OTEL_GRPC_EXPORTER_INSECURE: true
           # Load test specific environment variables
-          BILLING_RELAY_URL: ${{ inputs.billing-relay-env-url }}
+          BILLING_RELAY_URL: ${{ inputs.billing_relay_env_url || 'https://billingrelay.qa.bitwarden.pw' }}
           BILLING_PAYPAL_WEBHOOK_KEY: ${{ needs.get-secrets.outputs.billing_paypal_webhook_key }}
         with:
           flags: ${{ env._K6_FLAGS }}
