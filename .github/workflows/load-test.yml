@@ -21,13 +21,16 @@ on:
         description: "URL of the billing relay environment"
         default: "https://billingrelay.qa.bitwarden.pw"
 
+permissions:
+  contents: read
+
 jobs:
   get-secrets:
     name: Get secrets
     runs-on: ubuntu-24.04
     outputs:
-      dd-api-key: ${{ steps.get-kv-secrets.outputs.DD_API_KEY }}
-      billing-paypal-webhook-key: ${{ steps.get-kv-secrets.outputs.billing-paypal-webhook-key }}
+      dd_api_key: ${{ steps.get-kv-secrets.outputs.dd-api-key }}
+      billing_paypal_webhook_key: ${{ steps.get-kv-secrets.outputs.billing-paypal-webhook-key }}
     steps:
       - name: Azure Login
         uses: bitwarden/gh-actions/azure-login@main
@@ -40,7 +43,7 @@ jobs:
         id: get-kv-secrets
         uses: bitwarden/gh-actions/get-keyvault-secrets@main
         with:
-          keyvault: gh-billing-repository
+          keyvault: gh-billing-relay
           secrets: "billing-paypal-webhook-key,dd-api-key"
 
       - name: Azure Logout
@@ -60,7 +63,7 @@ jobs:
         env:
           DOCKER_CONTENT_TRUST: 1
           DD_SITE: us3.datadoghq.com
-          DD_API_KEY: ${{ needs.get-secrets.outputs.dd-api-key }}
+          DD_API_KEY: ${{ needs.get-secrets.outputs.dd_api_key }}
           DD_DOGSTATSD_NON_LOCAL_TRAFFIC: 1
           DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT: 0.0.0.0:4317
           DD_HEALTH_PORT: 5555
@@ -96,7 +99,7 @@ jobs:
           K6_OTEL_GRPC_EXPORTER_INSECURE: true
           # Load test specific environment variables
           BILLING_RELAY_URL: ${{ inputs.billing-relay-env-url }}
-          BILLING_PAYPAL_WEBHOOK_KEY: ${{ needs.get-secrets.outputs.billing-paypal-webhook-key }}
+          BILLING_PAYPAL_WEBHOOK_KEY: ${{ needs.get-secrets.outputs.billing_paypal_webhook_key }}
         with:
           flags: ${{ env._K6_FLAGS }}
           path: ${{ inputs.k6_test_path }}
