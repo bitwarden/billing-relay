@@ -28,6 +28,8 @@ jobs:
   get-secrets:
     name: Get secrets
     runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
     outputs:
       dd_api_key: ${{ steps.get-kv-secrets.outputs.dd-api-key }}
       billing_paypal_webhook_key: ${{ steps.get-kv-secrets.outputs.billing-paypal-webhook-key }}
