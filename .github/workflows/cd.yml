@@ -86,6 +86,9 @@ jobs:
           keyvault: gh-billing-relay
           secrets: "PUBLISH_TOKEN"
 
+      - name: Azure Logout
+        uses: bitwarden/gh-actions/azure-logout@main
+
       - name: Dispatch deployment
         env:
           GH_TOKEN: ${{ steps.get-kv-secrets.outputs.PUBLISH_TOKEN }}
