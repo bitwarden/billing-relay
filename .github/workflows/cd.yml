@@ -84,14 +84,14 @@ jobs:
         uses: bitwarden/gh-actions/get-keyvault-secrets@main
         with:
           keyvault: gh-billing-relay
-          secrets: "PUBLISH_TOKEN"
+          secrets: "PUBLISH-TOKEN"
 
       - name: Azure Logout
         uses: bitwarden/gh-actions/azure-logout@main
 
       - name: Dispatch deployment
         env:
-          GH_TOKEN: ${{ steps.get-kv-secrets.outputs.PUBLISH_TOKEN }}
+          GH_TOKEN: ${{ steps.get-kv-secrets.outputs.PUBLISH-TOKEN }}
         run: >
           gh workflow run deploy-k8s-service.yml
           --repo bitwarden/devops
