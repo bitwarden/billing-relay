@@ -36,6 +36,7 @@ jobs:
 
       - name: Azure Login
         id: azure-login
+        if: ${{ inputs.push-docker-image }}
         uses: bitwarden/gh-actions/azure-login@main
         with:
           subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -96,6 +97,7 @@ jobs:
           output-format: sarif
 
       - name: Azure Logout
+        if: ${{ inputs.push-docker-image }}
         uses: bitwarden/gh-actions/azure-logout@main
 
       - name: Upload Grype results to GitHub
