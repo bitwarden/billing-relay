@@ -71,9 +71,27 @@ jobs:
       - build-push-docker
 
     steps:
+      - name: Azure Login
+        id: azure-login
+        uses: bitwarden/gh-actions/azure-login@main
+        with:
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+
+      - name: Get KV secrets
+        id: get-kv-secrets
+        uses: bitwarden/gh-actions/get-keyvault-secrets@main
+        with:
+          keyvault: gh-billing-relay
+          secrets: "PUBLISH-TOKEN"
+
+      - name: Azure Logout
+        uses: bitwarden/gh-actions/azure-logout@main
+
       - name: Dispatch deployment
         env:
-          GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          GH_TOKEN: ${{ steps.get-kv-secrets.outputs.PUBLISH-TOKEN }}
         run: >
           gh workflow run deploy-k8s-service.yml
           --repo bitwarden/devops
