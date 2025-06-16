@@ -77,6 +77,8 @@ jobs:
         with:
           app-id: ${{ secrets.BW_GHAPP_ID }}
           private-key: ${{ secrets.BW_GHAPP_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: devops
 
       - name: Dispatch deployment
         env:
