@@ -10,6 +10,8 @@ on:
       - "main"
     types: [opened, synchronize]
 
+permissions: {}
+
 jobs:
   check-run:
     name: Check PR run
