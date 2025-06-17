@@ -36,7 +36,7 @@ jobs:
       billing_paypal_webhook_key: ${{ steps.get-kv-secrets.outputs.billing-paypal-webhook-key }}
 
     steps:
-      - name: Azure Login
+      - name: Log in to Azure
         uses: bitwarden/gh-actions/azure-login@main
         with:
           subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -50,7 +50,7 @@ jobs:
           keyvault: gh-billing-relay
           secrets: "billing-paypal-webhook-key,dd-api-key"
 
-      - name: Azure Logout
+      - name: Log out of Azure
         uses: bitwarden/gh-actions/azure-logout@main
 
   run-tests:
@@ -88,7 +88,7 @@ jobs:
         ${{ inputs.k6-flags }}
 
     steps:
-      - name: Checkout repo
+      - name: Check out repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
