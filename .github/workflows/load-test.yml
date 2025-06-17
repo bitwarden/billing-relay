@@ -34,6 +34,7 @@ jobs:
     outputs:
       dd_api_key: ${{ steps.get-kv-secrets.outputs.dd-api-key }}
       billing_paypal_webhook_key: ${{ steps.get-kv-secrets.outputs.billing-paypal-webhook-key }}
+
     steps:
       - name: Azure Login
         uses: bitwarden/gh-actions/azure-login@main
