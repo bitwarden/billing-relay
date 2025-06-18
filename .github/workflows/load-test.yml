@@ -25,6 +25,12 @@ permissions:
   contents: read
   id-token: write
 
+env:
+  # Specify defaults for scheduled runs
+  TEST_ID: ${{ inputs.test-id || 'billing-relay-load-test' }}
+  K6_TEST_PATH: ${{ inputs.k6-test-path || 'test/load/*.js' }}
+  BILLING_RELAY_ENV_URL: ${{ inputs.billing-relay-env-url || 'https://billingrelay.qa.bitwarden.pw' }}
+
 jobs:
   get-secrets:
     name: Get secrets
@@ -81,11 +87,6 @@ jobs:
           --health-retries 10
           --health-start-period 30s
           --pid host
-    env:
-      _K6_FLAGS: >-
-        --tag test-id=${{ inputs.test-id || 'billing-relay-load-test' }}
-        -o experimental-opentelemetry
-        ${{ inputs.k6-flags }}
 
     steps:
       - name: Check out repo
@@ -103,8 +104,11 @@ jobs:
           K6_OTEL_METRIC_PREFIX: k6_
           K6_OTEL_GRPC_EXPORTER_INSECURE: true
           # Load test specific environment variables
-          BILLING_RELAY_URL: ${{ inputs.billing-relay-env-url || 'https://billingrelay.qa.bitwarden.pw' }}
+          BILLING_RELAY_URL: ${{ env.BILLING_RELAY_ENV_URL }}
           BILLING_PAYPAL_WEBHOOK_KEY: ${{ needs.get-secrets.outputs.billing_paypal_webhook_key }}
         with:
-          flags: ${{ env._K6_FLAGS }}
-          path: ${{ inputs.k6-test-path }}
+          flags: >-
+            --tag test-id=${{ env.TEST_ID }}
+            -o experimental-opentelemetry
+            ${{ inputs.k6-flags }}
+          path: ${{ env.K6_TEST_PATH }}
