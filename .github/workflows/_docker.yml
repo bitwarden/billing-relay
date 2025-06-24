@@ -21,6 +21,9 @@ on:
         type: string
         required: true
 
+permissions:
+  contents: read
+
 jobs:
   docker:
     name: Docker
