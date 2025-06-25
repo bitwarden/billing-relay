@@ -21,6 +21,10 @@ on:
         type: string
         required: true
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   docker:
     name: Docker
