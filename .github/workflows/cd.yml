@@ -71,9 +71,18 @@ jobs:
       - build-push-docker
 
     steps:
+      - name: Generate GH App token
+        uses: actions/create-github-app-token@df432ceedc7162793a195dd1713ff69aefc7379e # v2.0.6
+        id: app-token
+        with:
+          app-id: ${{ secrets.BW_GHAPP_ID }}
+          private-key: ${{ secrets.BW_GHAPP_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: devops
+
       - name: Dispatch deployment
         env:
-          GH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: >
           gh workflow run deploy-k8s-service.yml
           --repo bitwarden/devops

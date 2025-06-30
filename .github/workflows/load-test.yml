@@ -1,0 +1,114 @@
+name: Load test
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # Run every Monday at 00:00
+  workflow_dispatch:
+    inputs:
+      test-id:
+        type: string
+        description: "Identifier label for Datadog metrics"
+        default: "billing-relay-load-test"
+      k6-test-path:
+        type: string
+        description: "Path to load test files"
+        default: "test/load/*.js"
+      k6-flags:
+        type: string
+        description: "Additional k6 flags"
+      billing-relay-env-url:
+        type: string
+        description: "URL of the billing relay environment"
+        default: "https://billingrelay.qa.bitwarden.pw"
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  # Specify defaults for scheduled runs
+  TEST_ID: ${{ inputs.test-id || 'billing-relay-load-test' }}
+  K6_TEST_PATH: ${{ inputs.k6-test-path || 'test/load/*.js' }}
+  BILLING_RELAY_ENV_URL: ${{ inputs.billing-relay-env-url || 'https://billingrelay.qa.bitwarden.pw' }}
+
+jobs:
+  get-secrets:
+    name: Get secrets
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+    outputs:
+      dd_api_key: ${{ steps.get-kv-secrets.outputs.dd-api-key }}
+      billing_paypal_webhook_key: ${{ steps.get-kv-secrets.outputs.billing-paypal-webhook-key }}
+
+    steps:
+      - name: Log in to Azure
+        uses: bitwarden/gh-actions/azure-login@main
+        with:
+          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+
+      - name: Get Azure Key Vault secrets
+        id: get-kv-secrets
+        uses: bitwarden/gh-actions/get-keyvault-secrets@main
+        with:
+          keyvault: gh-billing-relay
+          secrets: "billing-paypal-webhook-key,dd-api-key"
+
+      - name: Log out of Azure
+        uses: bitwarden/gh-actions/azure-logout@main
+
+  run-tests:
+    name: Run load tests
+    runs-on: ubuntu-24.04
+    needs: get-secrets
+    services:
+      # Datadog agent for collecting OTEL metrics from k6
+      datadog:
+        image: datadog/agent:7-full@sha256:226a1bbf6a92e939b4694c332e9535c958f6c9e924ca534c6f714c150be83dce
+        ports:
+          - 4317:4317
+          - 5555:5555
+        env:
+          DOCKER_CONTENT_TRUST: 1
+          DD_SITE: us3.datadoghq.com
+          DD_API_KEY: ${{ needs.get-secrets.outputs.dd_api_key }}
+          DD_DOGSTATSD_NON_LOCAL_TRAFFIC: 1
+          DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT: 0.0.0.0:4317
+          DD_HEALTH_PORT: 5555
+          HOST_PROC: /proc
+        options: >-
+          --volume /var/run/docker.sock:/var/run/docker.sock:ro
+          --volume /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+          --health-cmd "curl -f http://localhost:5555/health || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+          --health-start-period 30s
+          --pid host
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Set up k6
+        uses: grafana/setup-k6-action@ffe7d7290dfa715e48c2ccc924d068444c94bde2 # v1.1.0
+
+      - name: Run k6 tests
+        uses: grafana/run-k6-action@c6b79182b9b666aa4f630f4a6be9158ead62536e # v1.2.0
+        continue-on-error: false
+        env:
+          K6_OTEL_METRIC_PREFIX: k6_
+          K6_OTEL_GRPC_EXPORTER_INSECURE: true
+          # Load test specific environment variables
+          BILLING_RELAY_URL: ${{ env.BILLING_RELAY_ENV_URL }}
+          BILLING_PAYPAL_WEBHOOK_KEY: ${{ needs.get-secrets.outputs.billing_paypal_webhook_key }}
+        with:
+          flags: >-
+            --tag test-id=${{ env.TEST_ID }}
+            -o experimental-opentelemetry
+            ${{ inputs.k6-flags }}
+          path: ${{ env.K6_TEST_PATH }}

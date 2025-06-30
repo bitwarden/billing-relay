@@ -21,6 +21,10 @@ on:
         type: string
         required: true
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
   docker:
     name: Docker
@@ -33,7 +37,7 @@ jobs:
 
       - name: Log in to Azure
         if: ${{ inputs.push-docker-image }}
-        uses: Azure/login@a65d910e8af852a8061c627c456678983e180302 # v1.6.1
+        uses: Azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           creds: ${{ secrets.AZURE_PROD_KV_CREDENTIALS }}
 
@@ -84,7 +88,7 @@ jobs:
 
       - name: Scan Docker image
         id: container-scan
-        uses: anchore/scan-action@49e50b215b647c5ec97abb66f69af73c46a4ca08 # v5.0.1
+        uses: anchore/scan-action@2c901ab7378897c01b8efaa2d0c9bf519cc64b9e # v6.2.0
         with:
           image: ${{ steps.tag-list.outputs.tags }}
           fail-build: false
