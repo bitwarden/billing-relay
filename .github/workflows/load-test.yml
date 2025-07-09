@@ -74,7 +74,7 @@ jobs:
             --health-retries 10 \
             --health-start-period 30s \
             --pid host \
-            datadog/agent:7-full@sha256:226a1bbf6a92e939b4694c332e9535c958f6c9e924ca534c6f714c150be83dce
+            datadog/agent:7-full@sha256:800dfd060650a6eb147dd5697288dab1968e0bb0577785c59ca664f422c9299a
 
       - name: Check out repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
