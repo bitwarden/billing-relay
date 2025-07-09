@@ -9,8 +9,8 @@ export const options = {
   scenarios: {
     single_user: {
       executor: "constant-vus",
-      vus: 1,
-      duration: "30s",
+      vus: __ENV.VUS ? parseInt(__ENV.VUS) : 1,
+      duration: __ENV.DURATION ? __ENV.DURATION : "30s",
       tags: { test_type: "single_user" },
     },
   },
