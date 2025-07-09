@@ -11,7 +11,10 @@ export const options = {
       executor: "constant-vus",
       vus: __ENV.VUS ? parseInt(__ENV.VUS) : 1,
       duration: __ENV.DURATION ? __ENV.DURATION : "30s",
-      tags: { test_type: "single_user" },
+      tags: {
+        test_type: "single_user",
+        name: `${BILLING_RELAY_URL}/paypal/ipn/`,
+      },
     },
   },
   thresholds: {
