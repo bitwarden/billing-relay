@@ -1,7 +1,7 @@
 import http from "k6/http";
 import { check, fail } from "k6";
 
-const REGIONS = __ENV.REGIONS.split(",") || ["US", "EU"];
+const REGIONS = __ENV.REGIONS ? __ENV.REGIONS.split(",") : ["US", "EU"];
 const BILLING_RELAY_URL = __ENV.BILLING_RELAY_URL;
 const BILLING_PAYPAL_WEBHOOK_KEY = __ENV.BILLING_PAYPAL_WEBHOOK_KEY;
 
