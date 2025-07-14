@@ -12,6 +12,9 @@ on:
         description: "version to be built"
         value: ${{ jobs.version.outputs.version }}
 
+permissions:
+  contents: read
+
 jobs:
   version:
     name: Calculate version
@@ -32,8 +35,8 @@ jobs:
 
           echo "Calculating next version..."
 
-          base_version=$(cat Directory.build.props |
-            grep -o "<BaseVersion>.*</BaseVersion>" |
+          base_version=$(
+            grep -o "<BaseVersion>.*</BaseVersion>" Directory.build.props |
             grep -Eo "[0-9]+\.[0-9]+"
           )
           major_version=$(echo $base_version | grep -Eo "[0-9]+" | head -1)
@@ -60,7 +63,8 @@ jobs:
           version_suffix=$patch_version
 
           if [[ "${{ inputs.is-release }}" == "false" ]]; then
-            version_suffix=$version_suffix-${GITHUB_SHA:0:7}
+            commit_sha=${{ github.event.pull_request.head.sha || github.sha }}
+            version_suffix=$version_suffix-${commit_sha:0:7}
           fi
 
           echo "  version: $base_version.$version_suffix"
