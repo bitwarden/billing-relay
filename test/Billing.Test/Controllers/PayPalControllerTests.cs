@@ -2,7 +2,6 @@ using System.Net;
 using Billing.Controllers;
 using Billing.Options;
 using Billing.Test.Utilities;
-using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -69,12 +68,14 @@ public class PayPalControllerTests
         result.CheckFor(StatusCodes.Status200OK);
 
         _httpClientFactory.Received(1).CreateClient();
-        messageHandler.Invocations.Should().Be(1);
+        Assert.Equal(1, messageHandler.Invocations);
 
         var requestContent = await ConvertToRequestContentAsync(formData);
-        messageHandler.RequestContent.Should().Be(requestContent);
-        messageHandler.RequestUri.Should().Be($"{expectedBillingAddress}/paypal/ipn?key={_key}");
+
+        Assert.Equal(requestContent, messageHandler.RequestContent);
+        Assert.Equal($"{expectedBillingAddress}/paypal/ipn?key={_key}", messageHandler.RequestUri);
     }
+
 
     [Theory]
     [ClassData(typeof(CustomFieldsGenerator))]
@@ -98,11 +99,12 @@ public class PayPalControllerTests
         result.CheckFor(StatusCodes.Status400BadRequest, responseContent);
 
         _httpClientFactory.Received(1).CreateClient();
-        messageHandler.Invocations.Should().Be(1);
+        Assert.Equal(1, messageHandler.Invocations);
 
         var requestContent = await ConvertToRequestContentAsync(formData);
-        messageHandler.RequestContent.Should().Be(requestContent);
-        messageHandler.RequestUri.Should().Be($"{expectedBillingAddress}/paypal/ipn?key={_key}");
+
+        Assert.Equal(requestContent, messageHandler.RequestContent);
+        Assert.Equal($"{expectedBillingAddress}/paypal/ipn?key={_key}", messageHandler.RequestUri);
     }
 
     [Theory]
@@ -122,6 +124,7 @@ public class PayPalControllerTests
         var result  = await _payPalController.PostIpnAsync(_key);
 
         // Assert
+        _httpClientFactory.Received(1).CreateClient();
         result.CheckFor(StatusCodes.Status500InternalServerError, $"Encountered an unexpected error while calling PayPal IPN for the region {region}");
     }
 
@@ -142,13 +145,13 @@ public class PayPalControllerTests
 
         // Assert
         _httpClientFactory.Received(1).CreateClient();
-        messageHandler.Invocations.Should().Be(1);
+        Assert.Equal(1, messageHandler.Invocations);
 
         var requestContent = await ConvertToRequestContentAsync(formData);
-        messageHandler.RequestContent.Should().Be(requestContent);
+        Assert.Equal(requestContent, messageHandler.RequestContent);
 
         var sentKeyValuePairs = ParseFormUrlEncodedPairs(messageHandler.RequestContent ?? string.Empty);
-        sentKeyValuePairs.Should().BeEquivalentTo(formData, options => options.WithStrictOrdering());
+        Assert.Equal(sentKeyValuePairs, formData);
     }
 
     private void ConfigureRequestWith(List<KeyValuePair<string, string>> data)
