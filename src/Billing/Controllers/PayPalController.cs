@@ -33,6 +33,8 @@ public partial class PayPalController(
 
         try
         {
+            Observability.IncrementCloudRegionCounter(cloudRegion);
+
             using var httpClient = httpClientFactory.CreateClient();
             var response = await httpClient.PostAsync(targetUrl, formContent);
 
@@ -98,17 +100,17 @@ public partial class PayPalController(
                 baseAddress = globalSettingOptionsSnapshot.Value.EUBillingBaseAddress.TrimEnd('/');
                 break;
             default:
-            {
-                // Assuming that all others are going to US
-                if (cloudRegion != "US")
                 {
-                    logger.LogWarning(
-                        "Expected cloud region to be either \"US\" or \"EU\", but received {CloudRegion}",
-                        cloudRegion);
+                    // Assuming that all others are going to US
+                    if (cloudRegion != "US")
+                    {
+                        logger.LogWarning(
+                            "Expected cloud region to be either \"US\" or \"EU\", but received {CloudRegion}",
+                            cloudRegion);
+                    }
+                    baseAddress = globalSettingOptionsSnapshot.Value.USBillingBaseAddress.TrimEnd('/');
+                    break;
                 }
-                baseAddress = globalSettingOptionsSnapshot.Value.USBillingBaseAddress.TrimEnd('/');
-                break;
-            }
         }
 
         var targetUrl = $"{baseAddress}/paypal/ipn?key={key}";
