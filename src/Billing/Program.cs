@@ -1,9 +1,11 @@
+using Billing;
 using Billing.Options;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.UseBitwardenSdk();
+builder.Services.AddSingleton<Observability>();
 
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();

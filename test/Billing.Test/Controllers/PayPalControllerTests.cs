@@ -1,15 +1,15 @@
+using System.Diagnostics.Metrics;
 using System.Net;
 using Billing.Controllers;
 using Billing.Options;
 using Billing.Test.Utilities;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute.ReceivedExtensions;
 
 namespace Billing.Test.Controllers;
 
@@ -37,7 +37,12 @@ public class PayPalControllerTests
         globalSettingsOptionsSnapshot.Value.Returns(globalSettingsOptions);
 
         _httpClientFactory = Substitute.For<IHttpClientFactory>();
-        _payPalController = new PayPalController(logger, _httpClientFactory, globalSettingsOptionsSnapshot);
+
+        var meterFactory = Substitute.For<IMeterFactory>();
+        meterFactory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("billing-relay"));
+        var observability = new Observability(meterFactory);
+
+        _payPalController = new PayPalController(logger, _httpClientFactory, globalSettingsOptionsSnapshot, observability);
     }
 
     private class CustomFieldsGenerator : TheoryData<(string region, string expectedBillingAddress, bool emptyCase)>
@@ -63,7 +68,7 @@ public class PayPalControllerTests
         var messageHandler = ConfigureResponseWith(HttpStatusCode.OK, "OK");
 
         // Act
-        var result  = await _payPalController.PostIpnAsync(_key);
+        var result = await _payPalController.PostIpnAsync(_key);
 
         // Assert
         result.CheckFor(StatusCodes.Status200OK);
@@ -92,7 +97,7 @@ public class PayPalControllerTests
         var messageHandler = ConfigureResponseWith(HttpStatusCode.BadRequest, responseContent);
 
         // Act
-        var result  = await _payPalController.PostIpnAsync(_key);
+        var result = await _payPalController.PostIpnAsync(_key);
 
         // Assert
         result.CheckFor(StatusCodes.Status400BadRequest, responseContent);
@@ -119,7 +124,7 @@ public class PayPalControllerTests
         _httpClientFactory.CreateClient().Throws<Exception>();
 
         // Act
-        var result  = await _payPalController.PostIpnAsync(_key);
+        var result = await _payPalController.PostIpnAsync(_key);
 
         // Assert
         result.CheckFor(StatusCodes.Status500InternalServerError, $"Encountered an unexpected error while calling PayPal IPN for the region {region}");
@@ -138,7 +143,7 @@ public class PayPalControllerTests
         var messageHandler = ConfigureResponseWith(HttpStatusCode.OK, "OK");
 
         // Act
-        _  = await _payPalController.PostIpnAsync(_key);
+        _ = await _payPalController.PostIpnAsync(_key);
 
         // Assert
         _httpClientFactory.Received(1).CreateClient();

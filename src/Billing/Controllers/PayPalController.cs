@@ -10,7 +10,8 @@ namespace Billing.Controllers;
 public partial class PayPalController(
     ILogger<PayPalController> logger,
     IHttpClientFactory httpClientFactory,
-    IOptions<GlobalSettingsOptions> globalSettingOptionsSnapshot)
+    IOptions<GlobalSettingsOptions> globalSettingOptionsSnapshot,
+    Observability observability)
     : ControllerBase
 {
     /// <summary>
@@ -33,7 +34,7 @@ public partial class PayPalController(
 
         try
         {
-            Observability.IncrementCloudRegionCounter(cloudRegion);
+            observability.TrackCloudRegion(cloudRegion);
 
             using var httpClient = httpClientFactory.CreateClient();
             var response = await httpClient.PostAsync(targetUrl, formContent);
