@@ -2,6 +2,14 @@ name: CD
 
 on:
   workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - mothership-prod
+          - mothership-qa
   push:
     branches:
       - main
@@ -98,6 +106,7 @@ jobs:
           repositories: devops
 
       - name: Dispatch deployment
+        if: ${{ inputs.env == 'mothership-prod' }}
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: >
@@ -106,6 +115,20 @@ jobs:
           --field image-names=billing-relay
           --field environment=Mothership
           --field overlay=mship-cloud-netnew
+          --field project-name="Billing Relay"
+          --field repository=billing-relay
+          --field tag=${{ needs.tag.outputs.git-tag }}
+
+      - name: Dispatch deployment
+        if: ${{ inputs.env == 'mothership-qa' || inputs.env == '' }}
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: >
+          gh workflow run deploy-k8s-service.yml
+          --repo bitwarden/devops
+          --field image-names=billing-relay
+          --field environment=Mothership
+          --field overlay=mship-qa-cloud
           --field project-name="Billing Relay"
           --field repository=billing-relay
           --field tag=${{ needs.tag.outputs.git-tag }}
