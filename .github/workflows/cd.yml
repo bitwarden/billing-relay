@@ -7,8 +7,8 @@ on:
         description: 'Environment to deploy to'
         required: true
         type: choice
+        default: 'mothership-qa'
         options:
-          - mothership-prod
           - mothership-qa
   push:
     branches:
@@ -105,8 +105,8 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: devops
 
-      - name: Dispatch deployment
-        if: ${{ inputs.env == 'mothership-prod' }}
+      - name: Dispatch deployment to Production
+        if: github.event_name != 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: >
@@ -119,8 +119,8 @@ jobs:
           --field repository=billing-relay
           --field tag=${{ needs.tag.outputs.git-tag }}
 
-      - name: Dispatch deployment
-        if: ${{ inputs.env == 'mothership-qa' || inputs.env == '' }}
+      - name: Dispatch deployment to QA
+        if: github.event_name == 'workflow_dispatch' && inputs.env == 'mothership-qa'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: >
