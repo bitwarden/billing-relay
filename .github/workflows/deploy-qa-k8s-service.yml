@@ -22,7 +22,6 @@ jobs:
   version:
     name: Determine version
     runs-on: ubuntu-22.04
-    shell: bash
     outputs:
       version: ${{ steps.version.outputs.value }}
     steps:
@@ -33,6 +32,7 @@ jobs:
 
       - name: Process input
         id: version
+        shell: bash
         env:
           VERSION: ${{ inputs.version }}
           SHA: ${{ github.sha }}
