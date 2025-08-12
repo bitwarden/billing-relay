@@ -129,4 +129,4 @@ jobs:
           --field overlay=mship-qa-cloud
           --field project-name="Billing Relay"
           --field repository=billing-relay
-          --field tag=${{ needs.tag.outputs.git-tag }}
+          --field tag=v${{ needs.version.outputs.version }}
