@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to build - e.g. '0.1.100'"
+        description: "Version to deploy - e.g. '0.1.100'"
         required: false
         type: string
         default: 'latest'
@@ -30,12 +30,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Process input
+      - name: Process version input
         id: version
         shell: bash
         env:
           VERSION: ${{ inputs.version }}
-          SHA: ${{ github.sha }}
         run: |
           git fetch --prune --tags
 
@@ -44,52 +43,20 @@ jobs:
           if [[ $VERSION == 'latest' ]]; then
             VERSION=$(git tag --sort=committerdate --list | tail -1) # retrieve latest tag value
           else
-            SHORT_SHA=${SHA:0:7}
-            VERSION="$VERSION-$SHORT_SHA"
+            VERSION=$(git tag --list | grep "$VERSION" || echo 'missing') # validate tag exists
+            if [[ $VERSION == 'missing' ]]; then
+              echo "ERR: ${{ inputs.version }} is missing from available tags" && exit 1
+            fi
           fi
           VERSION=${VERSION#v} # sanitize value
           echo "Version input: ${{ inputs.version }}" # sanity check
           echo "Version determined: $VERSION"
-          echo "value=$VERSION" > $GITHUB_OUTPUT
-
-  test:
-    name: Run test
-    uses: ./.github/workflows/_test.yml
-    with:
-      project-name: Billing.Test
-      project-path: ./test/Billing.Test
-
-  build:
-    name: Run build
-    needs:
-      - test
-      - version
-    uses: ./.github/workflows/_build.yml
-    with:
-      project-name: Billing
-      project-path: ./src/Billing
-      version: ${{ needs.version.outputs.version }}
-
-  build-push-docker:
-    name: Build and push Docker image
-    needs:
-      - test
-      - version
-      - build
-    uses: ./.github/workflows/_docker.yml
-    with:
-      project-name: Billing
-      project-path: ./src/Billing
-      version: ${{ needs.version.outputs.version }}
-      image-name: billing-relay
-      push-docker-image: true
-    secrets: inherit
+          echo "value=$VERSION" >> $GITHUB_OUTPUT
 
   deploy-k8s-service:
     name: Deploy to Kubernetes
     runs-on: ubuntu-22.04
     needs:
-      - build-push-docker
       - version
 
     steps:
