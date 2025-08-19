@@ -93,7 +93,7 @@ jobs:
           gh workflow run deploy-k8s-service.yml
           --repo bitwarden/devops
           --field image-names=billing-relay
-          --field environment=Mothership
+          --field environment=Mothership-QA
           --field overlay=mship-qa-cloud
           --field project-name="Billing Relay"
           --field repository=billing-relay
