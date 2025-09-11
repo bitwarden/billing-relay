@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0-distroless
 LABEL com.bitwarden.product="bitwarden"
 
 USER app
-ENV ASPNETCORE_URLS http://+:5000
+ENV ASPNETCORE_URLS=http://+:5000
 WORKDIR /app
 EXPOSE 5000
 

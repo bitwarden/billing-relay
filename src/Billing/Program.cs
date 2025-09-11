@@ -1,9 +1,11 @@
+using Billing;
 using Billing.Options;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.UseBitwardenSdk();
+builder.Services.AddSingleton<Observability>();
 
 builder.Services.AddControllers();
 builder.Services.AddHttpClient();
@@ -12,11 +14,8 @@ builder.Services.Configure<GlobalSettingsOptions>(builder.Configuration.GetSecti
 builder.Services.AddHealthChecks();
 
 var app = builder.Build();
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.MapHealthChecks("/health", new HealthCheckOptions
