@@ -11,10 +11,10 @@
 .github/renovate.json
 
 ## Docker files have shared ownership
-**/Dockerfile @bitwarden/team-billing-dev @bitwarden/dept-bre
-**/*.Dockerfile @bitwarden/team-billing-dev @bitwarden/dept-bre
-**/.dockerignore @bitwarden/team-billing-dev @bitwarden/dept-bre
-**/entrypoint.sh @bitwarden/team-billing-dev @bitwarden/dept-bre
+**/Dockerfile @bitwarden/team-billing-dev @bitwarden/dept-bre @bitwarden/team-appsec
+**/*.Dockerfile @bitwarden/team-billing-dev @bitwarden/dept-bre @bitwarden/team-appsec
+**/.dockerignore @bitwarden/team-billing-dev @bitwarden/dept-bre @bitwarden/team-appsec
+**/entrypoint.sh @bitwarden/team-billing-dev @bitwarden/dept-bre @bitwarden/team-appsec
 
 ## Shared workflows
 .github/workflows/_build.yml @bitwarden/dept-bre @bitwarden/team-billing-dev
