@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0-distroless
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-azurelinux3.0-distroless
 
 LABEL com.bitwarden.product="bitwarden"
 
