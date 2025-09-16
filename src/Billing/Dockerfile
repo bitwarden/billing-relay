@@ -1,4 +1,14 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS tool-env
+
+RUN dotnet tool install --tool-path /tools dotnet-trace \
+    && dotnet tool install --tool-path /tools dotnet-counters \
+    && dotnet tool install --tool-path /tools dotnet-dump \
+    && dotnet tool install --tool-path /tools dotnet-gcdump
+
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
+
+WORKDIR /tools
+COPY --from=tool-env /tools .
 
 LABEL com.bitwarden.product="bitwarden"
 
