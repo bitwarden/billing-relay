@@ -1,12 +1,14 @@
-name: CD
+name: Deploy QA K8s Service
+run-name: Deploy ${{ inputs.version }} to QA Env
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - "charts/**"
+    inputs:
+      version:
+        description: "Version to deploy - e.g. '0.1.100'"
+        required: false
+        type: string
+        default: 'latest'
 
 permissions:
   checks: write
@@ -18,57 +20,44 @@ permissions:
 
 jobs:
   version:
-    name: Calculate version
-    uses: ./.github/workflows/_version.yml
-    with:
-      is-release: true
+    name: Determine version
+    runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.version.outputs.value }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
 
-  tag:
-    name: Create release tag
-    needs: version
-    uses: ./.github/workflows/_create-release-tag.yml
-    with:
-      version: ${{ needs.version.outputs.version }}
+      - name: Process version input
+        id: version
+        shell: bash
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          git fetch --prune --tags
 
-  test:
-    name: Run test
-    uses: ./.github/workflows/_test.yml
-    with:
-      project-name: Billing.Test
-      project-path: ./test/Billing.Test
+          echo 'Determine version based on input'
 
-  build:
-    name: Run build
-    needs:
-      - test
-      - version
-    uses: ./.github/workflows/_build.yml
-    with:
-      project-name: Billing
-      project-path: ./src/Billing
-      version: ${{ needs.version.outputs.version }}
-
-  build-push-docker:
-    name: Build and push Docker image
-    needs:
-      - test
-      - version
-      - build
-    uses: ./.github/workflows/_docker.yml
-    with:
-      project-name: Billing
-      project-path: ./src/Billing
-      version: ${{ needs.version.outputs.version }}
-      image-name: billing-relay
-      push-docker-image: true
-    secrets: inherit
+          if [[ $VERSION == 'latest' ]]; then
+            VERSION=$(git tag --sort=committerdate --list | tail -1) # retrieve latest tag value
+          else
+            VERSION=$(git tag --list | grep "$VERSION" || echo 'missing') # validate tag exists
+            if [[ $VERSION == 'missing' ]]; then
+              echo "ERR: ${{ inputs.version }} is missing from available tags" && exit 1
+            fi
+          fi
+          VERSION=${VERSION#v} # sanitize value
+          echo "Version input: ${{ inputs.version }}" # sanity check
+          echo "Version determined: $VERSION"
+          echo "value=$VERSION" >> $GITHUB_OUTPUT
 
   deploy-k8s-service:
     name: Deploy to Kubernetes
     runs-on: ubuntu-22.04
     needs:
-      - tag
-      - build-push-docker
+      - version
 
     steps:
       - name: Log in to Azure
@@ -104,8 +93,8 @@ jobs:
           gh workflow run deploy-k8s-service.yml
           --repo bitwarden/devops
           --field image-names=billing-relay
-          --field environment=Mothership
-          --field overlay=mship-cloud-netnew
+          --field environment=Mothership-QA
+          --field overlay=mship-qa-cloud
           --field project-name="Billing Relay"
           --field repository=billing-relay
-          --field tag=${{ needs.tag.outputs.git-tag }}
+          --field tag=v${{ needs.version.outputs.version }}
