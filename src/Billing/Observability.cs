@@ -2,21 +2,28 @@ using System.Diagnostics.Metrics;
 
 namespace Billing;
 
-public class Observability
+public sealed class Observability : IDisposable
 {
-    private const string _meterName = "billing-relay";
-    private const string _counterCloudRegionName = _meterName + ".cloud_region_requests.count";
-
-    private Counter<int> _counterCloudRegion;
+    private readonly Meter _meter;
+    private readonly Counter<int> _counterCloudRegion;
 
     public Observability(IMeterFactory meterFactory)
     {
-        var meter = meterFactory.Create(_meterName);
-        _counterCloudRegion = meter.CreateCounter<int>(_counterCloudRegionName);
+        _meter = meterFactory.Create("Bitwarden.BillingRelay");
+        _counterCloudRegion = _meter.CreateCounter<int>(
+            "bitwarden.billing_relay.paypal_requests",
+            unit: "{request}",
+            description: "Number of requests relayed for PayPal.");
     }
 
-    public void TrackCloudRegion(string cloudRegion)
+
+    public void TrackPaypalRequest(string cloudRegion)
     {
         _counterCloudRegion.Add(1, new KeyValuePair<string, object?>("region", cloudRegion.ToLowerInvariant()));
+    }
+
+    public void Dispose()
+    {
+        _meter.Dispose();
     }
 }
