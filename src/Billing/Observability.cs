@@ -17,7 +17,7 @@ public sealed class Observability : IDisposable
     }
 
 
-    public void TrackPaypalRequest(string cloudRegion)
+    public void TrackPayPalRequest(string cloudRegion)
     {
         _counterCloudRegion.Add(1, new KeyValuePair<string, object?>("region", cloudRegion.ToLowerInvariant()));
     }
