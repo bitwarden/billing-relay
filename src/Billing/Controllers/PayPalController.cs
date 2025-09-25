@@ -34,7 +34,7 @@ public partial class PayPalController(
 
         try
         {
-            observability.TrackPaypalRequest(cloudRegion);
+            observability.TrackPayPalRequest(cloudRegion);
 
             using var httpClient = httpClientFactory.CreateClient();
             var response = await httpClient.PostAsync(targetUrl, formContent);
