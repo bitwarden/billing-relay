@@ -16,6 +16,7 @@ on:
       k6-flags:
         type: string
         description: "Additional k6 flags"
+      # Test specific inputs
       billing-relay-env-url:
         type: string
         description: "URL of the billing relay environment"
@@ -26,6 +27,10 @@ permissions:
   id-token: write
 
 env:
+  # Secret configuration
+  AZURE_KEY_VAULT_NAME: gh-billing-relay
+  AZURE_KEY_VAULT_SECRETS: billing-paypal-webhook-key,dd-api-key
+
   # Specify defaults for scheduled runs
   TEST_ID: ${{ inputs.test-id || 'billing-relay-load-test' }}
   K6_TEST_PATH: ${{ inputs.k6-test-path || 'test/load/*.js' }}
@@ -47,8 +52,8 @@ jobs:
         id: get-kv-secrets
         uses: bitwarden/gh-actions/get-keyvault-secrets@main
         with:
-          keyvault: gh-billing-relay
-          secrets: "billing-paypal-webhook-key,dd-api-key"
+          keyvault: ${{ env.AZURE_KEY_VAULT_NAME }}
+          secrets: "${{ env.AZURE_KEY_VAULT_SECRETS }}"
 
       - name: Log out of Azure
         uses: bitwarden/gh-actions/azure-logout@main
