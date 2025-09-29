@@ -20,8 +20,8 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      _PROJECT-PATH: ${{ inputs.project-path }}
-      _PROJECT-NAME: ${{ inputs.project-name }}
+      _PROJECT_PATH: ${{ inputs.project-path }}
+      _PROJECT_NAME: ${{ inputs.project-name }}
 
     steps:
       - name: Check out repo
@@ -42,13 +42,13 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Install dependencies
-        run: dotnet restore --locked-mode "${_PROJECT-PATH}/${_PROJECT-NAME}.csproj"
+        run: dotnet restore --locked-mode "$_PROJECT_PATH/$_PROJECT_NAME.csproj"
 
       - name: Build
-        run: dotnet build --verbosity minimal "${_PROJECT-PATH}/${_PROJECT-NAME}.csproj"
+        run: dotnet build --verbosity minimal "$_PROJECT_PATH/$_PROJECT_NAME.csproj"
 
       - name: Test
-        run: dotnet test "${_PROJECT-PATH}/${_PROJECT-NAME}.csproj" --no-build --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test "$_PROJECT_PATH/$_PROJECT_NAME.csproj" --no-build --logger "trx;LogFileName=test-results.trx"
 
       - name: Report test results
         uses: dorny/test-reporter@dc3a92680fcc15842eef52e8c4606ea7ce6bd3f3 # v2.1.1
