@@ -10,10 +10,11 @@
 # Various owners
 .github/renovate.json
 
-## Docker files have shared ownership
+## Docker-related files
 **/Dockerfile @bitwarden/team-billing-dev @bitwarden/dept-bre @bitwarden/team-appsec
 **/*.Dockerfile @bitwarden/team-billing-dev @bitwarden/dept-bre @bitwarden/team-appsec
 **/.dockerignore @bitwarden/team-billing-dev @bitwarden/dept-bre @bitwarden/team-appsec
+**/docker-compose.yml @bitwarden/team-billing-dev @bitwarden/dept-bre @bitwarden/team-appsec
 **/entrypoint.sh @bitwarden/team-billing-dev @bitwarden/dept-bre @bitwarden/team-appsec
 
 ## Shared workflows
