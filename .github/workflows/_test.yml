@@ -19,12 +19,16 @@ jobs:
       checks: write
       contents: read
       pull-requests: write
+    env:
+      _PROJECT-PATH: ${{ inputs.project-path }}
+      _PROJECT-NAME: ${{ inputs.project-name }}
 
     steps:
       - name: Check out repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up .NET
         uses: actions/setup-dotnet@d4c94342e560b34958eacfc5d055d21461ed1c5d # v5.0.0
@@ -38,13 +42,13 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Install dependencies
-        run: dotnet restore --locked-mode ${{ inputs.project-path }}/${{ inputs.project-name }}.csproj
+        run: dotnet restore --locked-mode "${_PROJECT-PATH}/${_PROJECT-NAME}.csproj"
 
       - name: Build
-        run: dotnet build --verbosity minimal ${{ inputs.project-path }}/${{ inputs.project-name }}.csproj
+        run: dotnet build --verbosity minimal "${_PROJECT-PATH}/${_PROJECT-NAME}.csproj"
 
       - name: Test
-        run: dotnet test ${{ inputs.project-path }}/${{ inputs.project-name }}.csproj --no-build --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test "${_PROJECT-PATH}/${_PROJECT-NAME}.csproj" --no-build --logger "trx;LogFileName=test-results.trx"
 
       - name: Report test results
         uses: dorny/test-reporter@dc3a92680fcc15842eef52e8c4606ea7ce6bd3f3 # v2.1.1
