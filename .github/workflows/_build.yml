@@ -22,8 +22,8 @@ jobs:
     name: Build
     runs-on: ubuntu-22.04
     env:
-      _PROJECT-PATH: ${{ inputs.project-path }}
-      _PROJECT-NAME: ${{ inputs.project-name }}
+      _PROJECT_PATH: ${{ inputs.project-path }}
+      _PROJECT_NAME: ${{ inputs.project-name }}
       _VERSION: ${{ inputs.version }}
     steps:
       - name: Check out repository
@@ -44,29 +44,29 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Install dependencies
-        run: dotnet restore "$_PROJECT-PATH/$_PROJECT-NAME.csproj"
+        run: dotnet restore "$_PROJECT_PATH/$_PROJECT_NAME.csproj"
 
       - name: Build
-        run: dotnet build --verbosity minimal "$_PROJECT-PATH/$_PROJECT-NAME.csproj"
+        run: dotnet build --verbosity minimal "$_PROJECT_PATH/$_PROJECT_NAME.csproj"
 
       - name: Publish
         run: |
           echo "Publish"
-          dotnet publish "$_PROJECT-PATH/$_PROJECT-NAME.csproj" \
+          dotnet publish "$_PROJECT_PATH/$_PROJECT_NAME.csproj" \
             -c Release --no-restore \
-            -o "./tmp/publish-$_PROJECT-NAME" -p:"Version=$_VERSION"
+            -o "./tmp/publish-$_PROJECT_NAME" -p:"Version=$_VERSION"
 
       - name: Create artifact
         run: |
-          cd "./tmp/publish-$_PROJECT-NAME"
-          zip -r "$_PROJECT-NAME.zip" .
-          mv "$_PROJECT-NAME.zip" ../../
+          cd "./tmp/publish-$_PROJECT_NAME"
+          zip -r "$_PROJECT_NAME.zip" .
+          mv "$_PROJECT_NAME.zip" ../../
           pwd
           ls -atlh ../../
 
       - name: Upload artifact
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
-          name: "$_PROJECT-NAME.zip"
-          path: "./$_PROJECT-NAME.zip"
+          name: "$_PROJECT_NAME.zip"
+          path: "./$_PROJECT_NAME.zip"
           if-no-files-found: error

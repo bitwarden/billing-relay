@@ -31,11 +31,11 @@ jobs:
     name: Docker
     runs-on: ubuntu-22.04
     env:
-      _PROJECT-PATH: ${{ inputs.project-path }}
-      _PROJECT-NAME: ${{ inputs.project-name }}
+      _PROJECT_PATH: ${{ inputs.project-path }}
+      _PROJECT_NAME: ${{ inputs.project-name }}
       _VERSION: ${{ inputs.version }}
-      _PUSH-DOCKER-IMAGE: ${{ inputs.push-docker-image }}
-      _IMAGE-NAME: ${{ inputs.image-name }}
+      _PUSH_DOCKER_IMAGE: ${{ inputs.push-docker-image }}
+      _IMAGE_NAME: ${{ inputs.image-name }}
 
     steps:
       - name: Check out repository
@@ -76,21 +76,21 @@ jobs:
       - name: Get build artifact
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
-          name: "$_PROJECT-NAME.zip"
+          name: "$_PROJECT_NAME.zip"
 
       - name: Set up build artifact
         run: |
-          mkdir -p "$_PROJECT-PATH/obj/build-output/publish"
-          unzip "$_PROJECT-NAME.zip" \
-            -d "$_PROJECT-PATH/obj/build-output/publish"
+          mkdir -p "$_PROJECT_PATH/obj/build-output/publish"
+          unzip "$_PROJECT_NAME.zip" \
+            -d "$_PROJECT_PATH/obj/build-output/publish"
 
       - name: Build Docker image
         uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6.13.0
         with:
-          context: ${ _PROJECT-NAME }
-          file: ${ _PROJECT-PATH }/Dockerfile
+          context: ${ _PROJECT_NAME }
+          file: ${ _PROJECT_PATH }/Dockerfile
           platforms: linux/amd64
-          push: ${ _PUSH-DOCKER-IMAGE }
+          push: ${ _PUSH_DOCKER_IMAGE }
           tags: ${{ steps.tag-list.outputs.tags }}
         env:
           DOCKER_BUILD_RECORD_UPLOAD: false
