@@ -87,10 +87,10 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6.13.0
         with:
-          context: ${ _PROJECT_NAME }
-          file: ${ _PROJECT_PATH }/Dockerfile
+          context: ${{ env._PROJECT_NAME }}
+          file: ${{ env._PROJECT_PATH }}/Dockerfile
           platforms: linux/amd64
-          push: ${ _PUSH_DOCKER_IMAGE }
+          push: ${{ env._PUSH_DOCKER_IMAGE }}
           tags: ${{ steps.tag-list.outputs.tags }}
         env:
           DOCKER_BUILD_RECORD_UPLOAD: false
