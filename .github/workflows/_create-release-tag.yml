@@ -34,21 +34,21 @@ jobs:
       - name: Create Git tag
         id: git-tag
         env:
-          _BOT_EMAIL: 106330231+bitwarden-devops-bot@users.noreply.github.com
-          _BOT_NAME: bitwarden-devops-bot
-          _VERSION: ${{ inputs.version }}
+          BOT_EMAIL: 106330231+bitwarden-devops-bot@users.noreply.github.com
+          BOT_NAME: bitwarden-devops-bot
+          VERSION: ${{ inputs.version }}
         run: |
-          git config --local user.email "${{ env._BOT_EMAIL }}"
-          git config --local user.name "${{ env._BOT_NAME }}"
+          git config --local user.email "${BOT_EMAIL}"
+          git config --local user.name "${BOT_NAME}"
 
           # Check if tag exists, set output then exit 0 if true.
-          if git log "v$_VERSION" >/dev/null 2>&1; then
-            echo "tag=v$_VERSION" >> "$GITHUB_OUTPUT"
+          if git log "v$VERSION" >/dev/null 2>&1; then
+            echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          git tag "v$_VERSION"
-          git push origin "v$_VERSION"
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
 
-          echo "tag=v$_VERSION" >> "$GITHUB_OUTPUT"
-          echo "tag_ref=$(git rev-list -n 1 "tags/v$_VERSION")" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag_ref=$(git rev-list -n 1 "tags/v$VERSION")" >> "$GITHUB_OUTPUT"
