@@ -100,6 +100,7 @@ jobs:
       - name: Dispatch deployment
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          _TAG: ${{ needs.tag.outputs.git-tag }}
         run: >
           gh workflow run deploy-k8s-service.yml
           --repo bitwarden/devops
@@ -108,4 +109,4 @@ jobs:
           --field overlay=mship-cloud-netnew
           --field project-name="Billing Relay"
           --field repository=billing-relay
-          --field tag=${{ needs.tag.outputs.git-tag }}
+          --field tag="$_TAG"

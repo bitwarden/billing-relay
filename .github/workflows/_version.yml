@@ -26,6 +26,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Generate version
         id: version
@@ -39,16 +40,16 @@ jobs:
             grep -o "<BaseVersion>.*</BaseVersion>" Directory.build.props |
             grep -Eo "[0-9]+\.[0-9]+"
           )
-          major_version=$(echo $base_version | grep -Eo "[0-9]+" | head -1)
-          minor_version=$(echo $base_version | grep -Eo "[0-9]+" | sed -n 2p)
+          major_version=$(echo "$base_version" | grep -Eo "[0-9]+" | head -1)
+          minor_version=$(echo "$base_version" | grep -Eo "[0-9]+" | sed -n 2p)
 
           latest_tag_version=$(git tag --sort=committerdate --list | tail -1)
           echo "  latest_tag_version: $latest_tag_version"
 
-          major_latest_tag_version=$(echo $latest_tag_version | grep -Eo "[0-9]+" | head -1)
+          major_latest_tag_version=$(echo "$latest_tag_version" | grep -Eo "[0-9]+" | head -1)
           echo "  major_latest_tag_version: $major_latest_tag_version"
 
-          minor_latest_tag_version=$(echo $latest_tag_version | grep -Eo "[0-9]+" | sed -n 2p)
+          minor_latest_tag_version=$(echo "$latest_tag_version" | grep -Eo "[0-9]+" | sed -n 2p)
           echo "  minor_latest_tag_version: $minor_latest_tag_version"
 
           if [[ "$major_latest_tag_version" != "$major_version" ]] || \
@@ -60,13 +61,13 @@ jobs:
 
           echo "  patch_version: $patch_version"
 
-          version_suffix=$patch_version
+          version_suffix="$patch_version"
 
           if [[ "${{ inputs.is-release }}" == "false" ]]; then
             commit_sha=${{ github.event.pull_request.head.sha || github.sha }}
-            version_suffix=$version_suffix-${commit_sha:0:7}
+            version_suffix="$version_suffix-${commit_sha:0:7}"
           fi
 
           echo "  version: $base_version.$version_suffix"
-          echo "value=$base_version.$version_suffix" >> $GITHUB_OUTPUT
+          echo "value=$base_version.$version_suffix" >> "$GITHUB_OUTPUT"
           echo "Done"
