@@ -87,7 +87,7 @@ jobs:
       - name: Build Docker image
         uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6.13.0
         with:
-          context: "${{ env._PROJECT_PATH }}"
+          context: ${{ env._PROJECT_PATH }} # zizmor: ignore[template-injection] # Needed to use this action, no risk with current usage
           file: ${{ env._PROJECT_PATH }}/Dockerfile
           platforms: linux/amd64
           push: ${{ env._PUSH_DOCKER_IMAGE }}
