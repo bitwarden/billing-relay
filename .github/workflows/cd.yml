@@ -8,18 +8,14 @@ on:
     paths-ignore:
       - "charts/**"
 
-permissions:
-  checks: write
-  contents: write
-  deployments: write
-  id-token: write
-  pull-requests: write
-  security-events: write
+permissions: {}
 
 jobs:
   version:
     name: Calculate version
     uses: ./.github/workflows/_version.yml
+    permissions:
+      contents: read
     with:
       is-release: true
 
@@ -27,12 +23,18 @@ jobs:
     name: Create release tag
     needs: version
     uses: ./.github/workflows/_create-release-tag.yml
+    permissions:
+      contents: write
     with:
       version: ${{ needs.version.outputs.version }}
 
   test:
     name: Run test
     uses: ./.github/workflows/_test.yml
+    permissions:
+      checks: write
+      contents: read
+      pull-requests: write
     with:
       project-name: Billing.Test
       project-path: ./test/Billing.Test
@@ -43,6 +45,8 @@ jobs:
       - test
       - version
     uses: ./.github/workflows/_build.yml
+    permissions:
+      contents: read
     with:
       project-name: Billing
       project-path: ./src/Billing
@@ -55,6 +59,10 @@ jobs:
       - version
       - build
     uses: ./.github/workflows/_docker.yml
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
     with:
       project-name: Billing
       project-path: ./src/Billing
@@ -66,6 +74,8 @@ jobs:
   deploy-k8s-service:
     name: Deploy to Kubernetes
     runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
     needs:
       - tag
       - build-push-docker
