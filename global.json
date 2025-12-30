@@ -1,6 +1,6 @@
 {
   "msbuild-sdks": {
-    "Bitwarden.Server.Sdk": "0.7.0"
+    "Bitwarden.Server.Sdk": "1.2.0"
   },
   "sdk": {
     "version": "8.0.100",
