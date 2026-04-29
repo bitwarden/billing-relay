@@ -27,3 +27,8 @@
 
 ## BRE team owns these workflows
 .github/workflows/cd.yml @bitwarden/dept-bre
+
+# Claude related files
+.claude/ @bitwarden/team-ai-sme
+.github/workflows/respond.yml @bitwarden/team-ai-sme
+.github/workflows/review-code.yml @bitwarden/team-ai-sme
