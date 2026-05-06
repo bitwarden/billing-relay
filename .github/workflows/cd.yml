@@ -71,9 +71,9 @@ jobs:
       push-docker-image: true
     secrets: inherit
 
-  deploy-k8s-service:
-    name: Deploy to Kubernetes
-    runs-on: ubuntu-22.04
+  deploy:
+    name: Trigger deployment via deploy repo
+    runs-on: ubuntu-24.04
     permissions:
       id-token: write
     needs:
@@ -105,18 +105,31 @@ jobs:
           app-id: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-ID }}
           private-key: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
           owner: ${{ github.repository_owner }}
-          repositories: devops
+          repositories: deploy
+          permission-deployments: write
 
-      - name: Dispatch deployment
+      - name: Create QA deployment in deploy repo
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           _TAG: ${{ needs.tag.outputs.git-tag }}
-        run: >
-          gh workflow run deploy-k8s-service.yml
-          --repo bitwarden/devops
-          --field image-names=billing-relay
-          --field environment=Mothership
-          --field overlay=mship-cloud-netnew
-          --field project-name="Billing Relay"
-          --field repository=billing-relay
-          --field tag="$_TAG"
+        run: |
+          gh api repos/bitwarden/deploy/deployments \
+            --method POST \
+            -f ref=main \
+            -f environment=trigger-actions \
+            -f task=deploy-billing-relay-qa \
+            -f description="Deploy billing-relay $_TAG to QA" \
+            -F payload="{\"tag\":\"$_TAG\"}"
+
+      - name: Create PRD deployment in deploy repo
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          _TAG: ${{ needs.tag.outputs.git-tag }}
+        run: |
+          gh api repos/bitwarden/deploy/deployments \
+            --method POST \
+            -f ref=main \
+            -f environment=trigger-actions \
+            -f task=deploy-billing-relay-prd \
+            -f description="Deploy billing-relay $_TAG to PRD" \
+            -F payload="{\"tag\":\"$_TAG\"}"
