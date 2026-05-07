@@ -64,6 +64,8 @@ jobs:
           else
             IMAGE_TAG="$_VERSION"
           fi
+          # limit image tags to 128 characters
+          IMAGE_TAG=${IMAGE_TAG:0:128}
           echo "image_tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
 
       - name: Generate tag list
