@@ -88,6 +88,7 @@ jobs:
           azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
           azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
           task: deploy-billing-relay-qa
+          data: '{"tag": "${{ needs.tag.outputs.git-tag }}"}'
 
       - name: Trigger PRD deployment
         uses: bitwarden/gh-actions/trigger-actions@main
@@ -96,3 +97,4 @@ jobs:
           azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
           azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
           task: deploy-billing-relay-prd
+          data: '{"tag": "${{ needs.tag.outputs.git-tag }}"}'
