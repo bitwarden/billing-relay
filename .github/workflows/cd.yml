@@ -71,9 +71,9 @@ jobs:
       push-docker-image: true
     secrets: inherit
 
-  deploy-k8s-service:
-    name: Deploy to Kubernetes
-    runs-on: ubuntu-22.04
+  deploy:
+    name: Trigger deployment via deploy repo
+    runs-on: ubuntu-24.04
     permissions:
       id-token: write
     needs:
@@ -81,42 +81,20 @@ jobs:
       - build-push-docker
 
     steps:
-      - name: Log in to Azure
-        uses: bitwarden/gh-actions/azure-login@main
+      - name: Trigger QA deployment
+        uses: bitwarden/gh-actions/trigger-actions@main
         with:
-          subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          tenant_id: ${{ secrets.AZURE_TENANT_ID }}
-          client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          task: deploy-billing-relay-qa
+          data: '{"tag": "${{ needs.tag.outputs.git-tag }}"}'
 
-      - name: Get Azure Key Vault secrets
-        id: get-kv-secrets
-        uses: bitwarden/gh-actions/get-keyvault-secrets@main
+      - name: Trigger PRD deployment
+        uses: bitwarden/gh-actions/trigger-actions@main
         with:
-          keyvault: gh-org-bitwarden
-          secrets: "BW-GHAPP-ID,BW-GHAPP-KEY"
-
-      - name: Log out from Azure
-        uses: bitwarden/gh-actions/azure-logout@main
-
-      - name: Generate GH App token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
-        id: app-token
-        with:
-          app-id: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-ID }}
-          private-key: ${{ steps.get-kv-secrets.outputs.BW-GHAPP-KEY }}
-          owner: ${{ github.repository_owner }}
-          repositories: devops
-
-      - name: Dispatch deployment
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-          _TAG: ${{ needs.tag.outputs.git-tag }}
-        run: >
-          gh workflow run deploy-k8s-service.yml
-          --repo bitwarden/devops
-          --field image-names=billing-relay
-          --field environment=Mothership
-          --field overlay=mship-cloud-netnew
-          --field project-name="Billing Relay"
-          --field repository=billing-relay
-          --field tag="$_TAG"
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          task: deploy-billing-relay-prd
+          data: '{"tag": "${{ needs.tag.outputs.git-tag }}"}'
