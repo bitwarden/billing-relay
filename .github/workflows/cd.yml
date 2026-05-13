@@ -71,21 +71,38 @@ jobs:
       push-docker-image: true
     secrets: inherit
 
-  deploy:
-    name: Trigger deployment via deploy repo
+  deploy-qa:
+    name: Trigger QA deployment via deploy repo
     runs-on: ubuntu-24.04
     permissions:
       id-token: write
     needs:
       - tag
       - build-push-docker
-
     steps:
-      - name: Trigger deployment
+      - name: Trigger QA deployment
         uses: bitwarden/gh-actions/trigger-actions@main
         with:
           azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
           azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
-          task: deploy-billing-relay
+          task: deploy-billing-relay-qa
+          data: '{"tag": "${{ needs.tag.outputs.git-tag }}"}'
+
+  deploy-prod:
+    name: Trigger prod deployment via deploy repo
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+    needs:
+      - tag
+      - build-push-docker
+    steps:
+      - name: Trigger prod deployment
+        uses: bitwarden/gh-actions/trigger-actions@main
+        with:
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          task: deploy-billing-relay-prod
           data: '{"tag": "${{ needs.tag.outputs.git-tag }}"}'
