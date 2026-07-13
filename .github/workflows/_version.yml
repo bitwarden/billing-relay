@@ -30,6 +30,9 @@ jobs:
 
       - name: Generate version
         id: version
+        env:
+          IS_RELEASE: ${{ inputs.is-release }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           ls -la
           git fetch --prune --tags
@@ -63,9 +66,8 @@ jobs:
 
           version_suffix="$patch_version"
 
-          if [[ "${{ inputs.is-release }}" == "false" ]]; then
-            commit_sha=${{ github.event.pull_request.head.sha || github.sha }}
-            version_suffix="$version_suffix-${commit_sha:0:7}"
+          if [[ "$IS_RELEASE" == "false" ]]; then
+            version_suffix="$version_suffix-${COMMIT_SHA:0:7}"
           fi
 
           echo "  version: $base_version.$version_suffix"
