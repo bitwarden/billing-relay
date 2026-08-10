@@ -61,7 +61,6 @@ jobs:
     uses: ./.github/workflows/_docker.yml
     permissions:
       contents: read
-      security-events: write
       id-token: write
     with:
       project-name: Billing
